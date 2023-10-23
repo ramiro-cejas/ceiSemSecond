@@ -1,6 +1,7 @@
 package SecondSemantic.Semantic;
 
 import SecondSemantic.Lexical.Token;
+import SecondSemantic.Semantic.Nodes.LocalVar;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -262,24 +263,28 @@ public class SymbolTable {
                         if (!m.isStatic.getLexeme().equals("-"))
                             toReturn.append("        ├─ Static: ").append(m.isStatic.getLexeme()).append("\n");
                         if (m.parameters.isEmpty())
-                            toReturn.append("        └─ No parameters\n");
+                            toReturn.append("        ├─ No parameters\n");
                         else
-                            toReturn.append("        └─ Parameters:\n");
+                            toReturn.append("        ├─ Parameters:\n");
                         for (ConcreteAttribute p : m.parameters.values()){
                             if (m.parameters.values().toArray()[m.parameters.size()-1] == p)
-                                toReturn.append("            └─ ").append(p.name.getLexeme()).append(" : ").append(p.type.getLexeme()).append("\n");
+                                toReturn.append("        │   └─ ").append(p.name.getLexeme()).append(" : ").append(p.type.getLexeme()).append("\n");
                             else
-                                toReturn.append("            ├─ ").append(p.name.getLexeme()).append(" : ").append(p.type.getLexeme()).append("\n");
+                                toReturn.append("        │   ├─ ").append(p.name.getLexeme()).append(" : ").append(p.type.getLexeme()).append("\n");
                         }
                     }else{
                         toReturn.append("    ├─ ").append(m.name.getLexeme()).append(" : ").append(m.type.getLexeme()).append("\n");
                         if (!m.isStatic.getLexeme().equals("-"))
-                            toReturn.append("    │   ├─ Static: ").append(m.isStatic.getLexeme()).append("\n");                        toReturn.append("    │   └─ Parameters:\n");
+                            toReturn.append("    │   ├─ Static: ").append(m.isStatic.getLexeme()).append("\n");
+                        if (m.parameters.isEmpty())
+                            toReturn.append("    │   ├─ No parameters\n");
+                        else
+                            toReturn.append("    │   ├─ Parameters:\n");
                         for (ConcreteAttribute p : m.parameters.values()){
                             if (m.parameters.values().toArray()[m.parameters.size()-1] == p)
-                                toReturn.append("    │       └─ ").append(p.name.getLexeme()).append(" : ").append(p.type.getLexeme()).append("\n");
+                                toReturn.append("    │   │   └─ ").append(p.name.getLexeme()).append(" : ").append(p.type.getLexeme()).append("\n");
                             else
-                                toReturn.append("    │       ├─ ").append(p.name.getLexeme()).append(" : ").append(p.type.getLexeme()).append("\n");
+                                toReturn.append("    │   │   ├─ ").append(p.name.getLexeme()).append(" : ").append(p.type.getLexeme()).append("\n");
                         }
                     }
                 }

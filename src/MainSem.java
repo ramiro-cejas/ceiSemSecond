@@ -8,9 +8,10 @@ import java.io.IOException;
 import java.util.ArrayList;
 
 class MainSem {
-    public static void main(String[] args) {
+    public static void main(String[] args2) {
+        String [] args = {"resources/sinErrores/test.java"};
         long actual = System.currentTimeMillis();
-        boolean verbose = false;
+        boolean verbose = true;
         if (args.length == 0){
             System.out.println("ERROR: Ningun archivo fuente pasado como parámetro. Por favor proporcione la ruta del archivo como parámetro.");
         }
@@ -36,6 +37,7 @@ class MainSem {
                     errorsCollection.addAll(syntaxAnalyzer.getErrors());
                 }catch (Exception e){
                     errorsCollection.add(e);
+                    e.printStackTrace();
                 }
             } catch (IOException e) {
                 System.out.println("Error al abrir o leer el archivo.");

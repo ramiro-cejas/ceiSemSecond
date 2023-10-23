@@ -1,6 +1,7 @@
 package SecondSemantic.Semantic;
 
 import SecondSemantic.Lexical.Token;
+import SecondSemantic.Semantic.Nodes.*;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -14,6 +15,7 @@ public class ConcreteMethod {
     SymbolTable symbolTable;
     public ArrayList<ConcreteAttribute> parametersInOrder;
     private boolean alreadyChecked = false;
+    public NodeBlock currentBlock;
 
     public ConcreteMethod(Token name, Token type, Token isStatic, SymbolTable symbolTable) {
         this.name = name;

@@ -11,7 +11,7 @@ public class ConcreteClass{
     Token implementsName;
     Token extendsName;
     HashMap<String, ConcreteMethod> methods;
-    HashMap<String, ConcreteAttribute> attributes;
+    public HashMap<String, ConcreteAttribute> attributes;
     public ConcreteMethod currentMethod;
     SymbolTable symbolTable;
     public ConcreteMethod constructor;
