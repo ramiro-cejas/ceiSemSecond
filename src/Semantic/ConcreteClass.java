@@ -10,7 +10,7 @@ public class ConcreteClass{
     Token name;
     Token implementsName;
     Token extendsName;
-    HashMap<String, ConcreteMethod> methods;
+    public HashMap<String, ConcreteMethod> methods;
     public HashMap<String, ConcreteAttribute> attributes;
     public ConcreteMethod currentMethod;
     SymbolTable symbolTable;
