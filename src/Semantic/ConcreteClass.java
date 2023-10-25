@@ -7,7 +7,7 @@ import java.util.HashMap;
 import java.util.Objects;
 
 public class ConcreteClass{
-    Token name;
+    public Token name;
     Token implementsName;
     Token extendsName;
     public HashMap<String, ConcreteMethod> methods;
@@ -189,4 +189,9 @@ public class ConcreteClass{
         this.extendsName = extendsName;
     }
 
+    public void checkNamesAndTypes() throws SemanticException {
+        for (ConcreteMethod m : methods.values()){
+            m.checkNamesAndTypes();
+        }
+    }
 }

@@ -6,12 +6,13 @@ import SecondSemantic.Semantic.ConcreteMethod;
 import SecondSemantic.Semantic.SemanticException;
 import SecondSemantic.Semantic.SymbolTable;
 
-public class NodeUnaryOp implements Node{
+public class NodeUnaryOp extends NodeExpression {
 
     public Token unaryOp;
     public Node expression;
     private NodeBlock parentBlock;
     private boolean alreadyChecked = false;
+    public Token type;
 
     public NodeUnaryOp(Token unaryOp, Node expression, NodeBlock parentBlock) {
         this.unaryOp = unaryOp;
@@ -20,16 +21,17 @@ public class NodeUnaryOp implements Node{
     }
 
     @Override
-    public void check(SymbolTable symbolTable) {
+    public void check(SymbolTable symbolTable) throws SemanticException {
         if (!alreadyChecked){
             expression.check(symbolTable);
             if (unaryOp.getLexeme().equals("!")) {
-                if (!expression.getType().getLexeme().equals("boolean")) {
+                if (!expression.getType().getName().equals("keyword_boolean")) {
                     symbolTable.semExceptionHandler.show(new SemanticException(unaryOp, "Unary operator ! must be applied to boolean expressions"));
                 }
-            } else if (unaryOp.getLexeme().equals("-")) {
-                if (!expression.getType().getLexeme().equals("int") && !expression.getType().getLexeme().equals("float")) {
-                    symbolTable.semExceptionHandler.show(new SemanticException(unaryOp, "Unary operator - must be applied to int or float expressions"));
+                type = expression.getType();
+            } else if (unaryOp.getLexeme().equals("-") || unaryOp.getLexeme().equals("+")) {
+                if (!expression.getType().getName().equals("int") && !expression.getType().getName().equals("keyword_float")) {
+                    symbolTable.semExceptionHandler.show(new SemanticException(unaryOp, "Unary operator - or + must be applied to int or float expressions"));
                 }
             } else {
                 // This should never happen, but just in case

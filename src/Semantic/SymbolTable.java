@@ -1,7 +1,6 @@
 package SecondSemantic.Semantic;
 
 import SecondSemantic.Lexical.Token;
-import SecondSemantic.Semantic.Nodes.LocalVar;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -119,7 +118,7 @@ public class SymbolTable {
         checkClasses();
     }
 
-    private void checkClasses() {
+    private void checkClasses() throws SemanticException {
         for (ConcreteClass c : classes.values()){
             //if c extends other thing than a class then error
             if (!c.extendsName.getLexeme().equals("$")){
@@ -293,6 +292,12 @@ public class SymbolTable {
         }
 
         return toReturn.toString();
+    }
+
+    public void checkNamesAndTypes() throws SemanticException {
+        for (ConcreteClass c : classes.values()){
+            c.checkNamesAndTypes();
+        }
     }
 
     public Collection<? extends Exception> getErrors() {

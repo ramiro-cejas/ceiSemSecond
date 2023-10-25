@@ -382,7 +382,13 @@ public class SyntaxAnalyzer {
         //this will not cause any problems related of null pointer because the parent block is only used to check the visibility of the variables
         //if the parent block was null, then the variables will be the parameters and the attributes of the class
         //updated when call the check method of the block
+        if (symbolTable.currentClass.currentMethod.methodBlock == null)
+            symbolTable.currentClass.currentMethod.methodBlock = newSubBlock;
+        else
+            newSubBlock.parentBlock = symbolTable.currentClass.currentMethod.currentBlock;
+
         symbolTable.currentClass.currentMethod.currentBlock = newSubBlock;
+
         listaSentencias();
         match("punctuator_}");
         //When we finish the block, we go back to the parent block
@@ -403,6 +409,7 @@ public class SyntaxAnalyzer {
     private Node sentencia() throws LexicalException, SyntaxException, IOException {
         print("Entre en sentencia");
         Node sentence = null;
+
         if (tokenActual.getName().equals("punctuator_;")){
             match("punctuator_;");
             sentence = new EmptyNode();
@@ -418,7 +425,7 @@ public class SyntaxAnalyzer {
         } else if (tokenActual.getName().equals("keyword_if")){
             sentence = sentenciaIf();
         } else if (tokenActual.getName().equals("keyword_while")){
-            sentenciaWhile();
+            sentence = sentenciaWhile();
         } else if (tokenActual.getName().equals("punctuator_{")){
             sentence = bloque();
         } else {
@@ -441,7 +448,7 @@ public class SyntaxAnalyzer {
         match("idMetVar");
         match("assignment_=");
         Node expression = expresionCompuesta();
-        NodeVarDeclaration varDeclaration = new NodeVarDeclaration(name, expression);
+        NodeVarDeclaration varDeclaration = new NodeVarDeclaration(name, expression, symbolTable.currentClass.currentMethod.currentBlock);
         return varDeclaration;
     }
 
@@ -471,7 +478,7 @@ public class SyntaxAnalyzer {
         Node bodyThen = sentencia();
         Node bodyElse = elseOpcional();
 
-        return new NodeIf(condition, bodyThen, bodyElse);
+        return new NodeIf(condition, bodyThen, bodyElse, symbolTable.currentClass.currentMethod.currentBlock);
     }
 
     private Node elseOpcional() throws LexicalException, SyntaxException, IOException {
@@ -485,13 +492,14 @@ public class SyntaxAnalyzer {
         }
     }
 
-    private void sentenciaWhile() throws LexicalException, SyntaxException, IOException {
+    private Node sentenciaWhile() throws LexicalException, SyntaxException, IOException {
         print("Entre en sentenciaWhile");
         match("keyword_while");
         match("punctuator_(");
-        expresion();
+        Node condition = expresion();
         match("punctuator_)");
-        sentencia();
+        Node body = sentencia();
+        return new NodeWhile(condition, body, symbolTable.currentClass.currentMethod.currentBlock);
     }
 
     private Node expresion() throws LexicalException, SyntaxException, IOException {
@@ -517,19 +525,24 @@ public class SyntaxAnalyzer {
         return recursionExpresionCompuesta(basicExpression);
     }
 
-    private void recursionExpresionCompuesta() throws LexicalException, SyntaxException, IOException {
+    private Node recursionExpresionCompuesta(Node leftExpression) throws LexicalException, SyntaxException, IOException {
         print("Entre en recursionExpresionCompuesta");
         if (tokenActual.getName().equals("operator_||") || tokenActual.getName().equals("operator_&&") || tokenActual.getName().equals("operator_==") || tokenActual.getName().equals("operator_!=") || tokenActual.getName().equals("operator_<") || tokenActual.getName().equals("operator_>") || tokenActual.getName().equals("operator_<=") || tokenActual.getName().equals("operator_>=") || tokenActual.getName().equals("operator_+") || tokenActual.getName().equals("operator_-") || tokenActual.getName().equals("operator_*") || tokenActual.getName().equals("operator_/") || tokenActual.getName().equals("operator_%")){
-            operadorBinario();
-            expresionBasica();
-            recursionExpresionCompuesta();
+            Token binaryOp = operadorBinario();
+            Node rightExpression = expresionBasica();
+            Node binaryNode = new NodeBinaryOp(binaryOp, leftExpression, rightExpression, symbolTable.currentClass.currentMethod.currentBlock);
+            return recursionExpresionCompuesta(binaryNode);
         } else {
             //Epsilon
+            return leftExpression;
         }
     }
 
-    private void operadorBinario() throws LexicalException, SyntaxException, IOException {
+
+
+    private Token operadorBinario() throws LexicalException, SyntaxException, IOException {
         print("Entre en operadorBinario");
+        Token toReturn = tokenActual;
         if (tokenActual.getName().equals("operator_||")){
             match("operator_||");
         } else if (tokenActual.getName().equals("operator_&&")){
@@ -560,6 +573,7 @@ public class SyntaxAnalyzer {
             print("Error en operadorBinario");
             throw new SyntaxException(lexicalAnalyzer.getLine(), "operador binario", tokenActual.getLexeme());
         }
+        return toReturn;
     }
 
     private Node expresionBasica() throws LexicalException, SyntaxException, IOException {
@@ -599,7 +613,7 @@ public class SyntaxAnalyzer {
         if (tokenActual.getName().equals("keyword_null") || tokenActual.getName().equals("keyword_true") || tokenActual.getName().equals("keyword_false") || tokenActual.getName().equals("intLiteral") || tokenActual.getName().equals("charLiteral") || tokenActual.getName().equals("strLiteral") || tokenActual.getName().equals("floatLiteral")){
             return literal();
         } else if (tokenActual.getName().equals("keyword_this") || tokenActual.getName().equals("idMetVar") || tokenActual.getName().equals("keyword_new") || tokenActual.getName().equals("idClass") || tokenActual.getName().equals("punctuator_(")){
-            return acceso(); //TODO: return something
+            return acceso();
         } else {
             print("Error en operando");
             throw new SyntaxException(lexicalAnalyzer.getLine(), "literal o acceso", tokenActual.getLexeme());
@@ -642,119 +656,149 @@ public class SyntaxAnalyzer {
         return toReturn;
     }
 
-    private void primario() throws SyntaxException, LexicalException, IOException {
+    private Node primario() throws SyntaxException, LexicalException, IOException {
         print("Entre en primario");
+        Node toReturn = null;
         if (tokenActual.getName().equals("keyword_this")){
-            accesoThis();
+            toReturn = accesoThis();
         } else if (tokenActual.getName().equals("idMetVar")){
-            accesoMetVar();
+            toReturn = accesoMetVar();
         } else if (tokenActual.getName().equals("keyword_new")){
-            accesoConstructor();
+            toReturn = accesoConstructor();
         } else if (tokenActual.getName().equals("idClass")){
-            accesoMetodoEstatico();
+            toReturn = accesoMetodoEstatico();
         } else if (tokenActual.getName().equals("punctuator_(")){
-            expresionParentizada();
+            toReturn = expresionParentizada();
         } else {
             print("Error en primario");
             throw new SyntaxException(lexicalAnalyzer.getLine(), tokenActual.getName(), "this, identificador, new o (");
         }
+        return toReturn;
     }
+
+/*
+    expresion = opUna + ( literal | acceso ) | expresion + opBin + expresion | literal | acceso
+
+    expresion =     opUna       |       opBin    | literal | acceso
+                unaryOperator   | binaryOperator | literal | variable
+
+*/
 
     private void accesoThis() throws LexicalException, SyntaxException, IOException {
         print("Entre en accesoThis");
         match("keyword_this");
     }
 
-    private void accesoMetVar() throws LexicalException, SyntaxException, IOException {
+    private Node accesoMetVar() throws LexicalException, SyntaxException, IOException {
         print("Entre en accesoMetVar");
+        Token idMetVar = tokenActual;
         match("idMetVar");
-        continuacionMetodo();
+        Node toReturn = new NodeVariable(idMetVar, symbolTable.currentClass.currentMethod.currentBlock);
+        continuacionMetodo(toReturn);
+        return toReturn;
     }
 
-    private void continuacionMetodo() throws LexicalException, SyntaxException, IOException {
+    private void continuacionMetodo(Node toReturn) throws LexicalException, SyntaxException, IOException {
         print("Entre en continuacionMetodo");
         if (tokenActual.getName().equals("punctuator_(")){
-            argsActuales();
+            argsActuales(toReturn);
         } else {
             //Epsilon
         }
     }
 
-    private void accesoConstructor() throws LexicalException, SyntaxException, IOException {
+    private Node accesoConstructor() throws LexicalException, SyntaxException, IOException {
         print("Entre en accesoConstructor");
+        Token tok_new = tokenActual;
         match("keyword_new");
+        Token type = tokenActual;
         match("idClass");
+        Node toReturn = new NodeVariableConstructor(tok_new, symbolTable.currentClass.currentMethod.currentBlock, type);
         genericoOpcional();
-        argsActuales();
+        argsActuales(toReturn);
+        return toReturn;
     }
 
-    private void expresionParentizada() throws LexicalException, SyntaxException, IOException {
+    private Node expresionParentizada() throws LexicalException, SyntaxException, IOException {
         print("Entre en expresionParentizada");
         match("punctuator_(");
-        expresion();
+        Node toReturn = expresion();
         match("punctuator_)");
+        return toReturn;
     }
 
-    private void accesoMetodoEstatico() throws LexicalException, SyntaxException, IOException {
+    private Node accesoMetodoEstatico() throws LexicalException, SyntaxException, IOException {
         print("Entre en accesoMetodoEstatico");
+        Token idClass = tokenActual;
         match("idClass");
         genericoOpcional();
         match("punctuator_.");
+        Token idMetVar = tokenActual;
         match("idMetVar");
-        argsActuales();
+        Node toReturn = new NodeVariableStaticMethod(idMetVar, symbolTable.currentClass.currentMethod.currentBlock, idClass);
+        argsActuales(toReturn);
+        return toReturn;
     }
 
-    private void argsActuales() throws LexicalException, SyntaxException, IOException {
+    private void argsActuales(Node toReturn) throws LexicalException, SyntaxException, IOException {
         print("Entre en argsActuales");
+        NodeVariable nodeVariable = (NodeVariable) toReturn;
         match("punctuator_(");
-        listaExpsOpcional();
+        nodeVariable.isMethod = true;
+        listaExpsOpcional(nodeVariable);
         match("punctuator_)");
     }
 
-    private void listaExpsOpcional() throws LexicalException, SyntaxException, IOException {
+    private void listaExpsOpcional(Node toReturn) throws LexicalException, SyntaxException, IOException {
         print("Entre en listaExpsOpcional");
+        NodeVariable nodeVariable = (NodeVariable) toReturn;
         if (tokenActual.getName().equals("operator_+") || tokenActual.getName().equals("operator_-") || tokenActual.getName().equals("operator_!") || tokenActual.getName().equals("keyword_null") || tokenActual.getName().equals("keyword_true") || tokenActual.getName().equals("keyword_false") || tokenActual.getName().equals("intLiteral") || tokenActual.getName().equals("charLiteral") || tokenActual.getName().equals("strLiteral") || tokenActual.getName().equals("floatLiteral") || tokenActual.getName().equals("keyword_this") || tokenActual.getName().equals("idMetVar") || tokenActual.getName().equals("keyword_new") || tokenActual.getName().equals("idClass") || tokenActual.getName().equals("punctuator_(")){
-            expresion();
-            listaExps();
+            NodeExpression toAdd = (NodeExpression) expresion();
+            nodeVariable.parameters.add(toAdd);
+            listaExps(toReturn);
         } else {
             //Epsilon
         }
     }
 
-    private void listaExps() throws LexicalException, SyntaxException, IOException {
+    private void listaExps(Node toReturn) throws LexicalException, SyntaxException, IOException {
         print("Entre en listaExps");
+        NodeVariable nodeVariable = (NodeVariable) toReturn;
         if (tokenActual.getName().equals("punctuator_,")){
             match("punctuator_,");
-            expresion();
-            listaExps();
+            NodeExpression toAdd = (NodeExpression) expresion();
+            nodeVariable.parameters.add(toAdd);
+            listaExps(toReturn);
         } else {
             //Epsilon
         }
     }
 
-    private void encadenadoOpcional(Node primary) throws LexicalException, SyntaxException, IOException {
+    private void encadenadoOpcional(Node parentChain) throws LexicalException, SyntaxException, IOException {
         print("Entre en encadenadoOpcional");
-        Node access = new NodeAccess(primary, symbolTable.currentClass.currentMethod.currentBlock);
+        NodeVariable nodeVariable = (NodeVariable) parentChain;
         if (tokenActual.getName().equals("punctuator_.")){
-            puntoYMetVar();
-            argsOpcionales();
-            encadenadoOpcional(access);
+            NodeVariable newChain = puntoYMetVar();
+            nodeVariable.setChildChain(newChain);
+            argsOpcionales(newChain);
+            encadenadoOpcional(newChain);
         } else {
             //Epsilon
         }
     }
 
-    private void puntoYMetVar() throws LexicalException, SyntaxException, IOException {
+    private NodeVariable puntoYMetVar() throws LexicalException, SyntaxException, IOException {
         print("Entre en puntoYMetVar");
         match("punctuator_.");
         Token idMetVar = tokenActual;
         match("idMetVar");
+        return new NodeVariable(idMetVar, symbolTable.currentClass.currentMethod.currentBlock);
     }
 
-    private void argsOpcionales() throws LexicalException, SyntaxException, IOException {
+    private void argsOpcionales(Node toReturn) throws LexicalException, SyntaxException, IOException {
         print("Entre en argsOpcionales");
         if (tokenActual.getName().equals("punctuator_(")){
-            argsActuales();
+            argsActuales(toReturn);
         } else {
             //Epsilon
         }

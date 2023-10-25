@@ -18,7 +18,7 @@ public class NodeReturn implements Node{
     }
 
     @Override
-    public void check(SymbolTable symbolTable) {
+    public void check(SymbolTable symbolTable) throws SemanticException {
         if (alreadyChecked){
             return;
         }
@@ -27,7 +27,7 @@ public class NodeReturn implements Node{
             type = expression.getType();
         }
         else{
-            type = new Token("void", "void", 0);
+            type = new Token("keyword_void", "void", -1);
         }
         if (!type.getLexeme().equals(parentBlock.currentMethod.type.getLexeme())){
             symbolTable.semExceptionHandler.show(new SemanticException(parentBlock.currentMethod.type,"No return found with type "+parentBlock.currentMethod.type.getLexeme()+" in line "+parentBlock.currentMethod.type.getRow()));

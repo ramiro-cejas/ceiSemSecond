@@ -16,6 +16,7 @@ public class ConcreteMethod {
     public ArrayList<ConcreteAttribute> parametersInOrder;
     private boolean alreadyChecked = false;
     public NodeBlock currentBlock;
+    public NodeBlock methodBlock;
 
     public ConcreteMethod(Token name, Token type, Token isStatic, SymbolTable symbolTable) {
         this.name = name;
@@ -26,7 +27,7 @@ public class ConcreteMethod {
         parametersInOrder = new ArrayList<>();
     }
 
-    public void addParameter(ConcreteAttribute p) {
+    public void addParameter(ConcreteAttribute p) throws SemanticException {
         if (!parameters.containsKey(p.name.getLexeme())){
             if (p.type.getLexeme().equals("void")){
                 symbolTable.semExceptionHandler.show(new SemanticException(p.name,"Parameter " + p.name.getLexeme() + " cannot be void in line "+ p.name.getRow()));
@@ -39,7 +40,7 @@ public class ConcreteMethod {
             symbolTable.semExceptionHandler.show(new SemanticException(p.name,"Parameter " + p.name.getLexeme() + " already defined in line "+ p.name.getRow()));
     }
 
-    public void check() {
+    public void check() throws SemanticException {
         if (!alreadyChecked){
             for (ConcreteAttribute p : parameters.values()){
                 if (p.type.getName().equals("idClass")) {
@@ -53,6 +54,8 @@ public class ConcreteMethod {
         }
     }
 
-
+    public void checkNamesAndTypes() throws SemanticException {
+        methodBlock.check(symbolTable);
+    }
 
 }

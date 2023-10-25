@@ -10,10 +10,10 @@ public class NodeVariable implements Node{
     public Token name;
     public NodeBlock parentBlock;
     private boolean alreadyChecked = false;
-    private Token type;
+    public Token type;
     public NodeVariable childChain, parentChain;
     public boolean isMethod = false;
-    public ArrayList<ConcreteAttribute> parameters = new ArrayList<>();
+    public ArrayList<NodeExpression> parameters = new ArrayList<>();
 
     public NodeVariable(Token name, NodeBlock parentBlock) {
         this.name = name;
@@ -21,12 +21,30 @@ public class NodeVariable implements Node{
     }
 
     @Override
-    public void check(SymbolTable symbolTable) {
+    public void check(SymbolTable symbolTable) throws SemanticException {
         if (!alreadyChecked){
             if (isMethod){
                 if (parentChain == null){
-                    symbolTable.semExceptionHandler.show(new SemanticException(name,"Method " + name.getLexeme() + " is not defined"));
+                    ConcreteClass currentClass = parentBlock.currentClass;
+                    ConcreteMethod methodToMatch = currentClass.methods.get(name.getLexeme());
+                    if (methodToMatch == null){
+                        symbolTable.semExceptionHandler.show(new SemanticException(name,"Method " + name.getLexeme() + " is not defined in class " + currentClass.name.getLexeme()));
+                    } else {
+                        if (methodToMatch.parameters.size() != parameters.size()){
+                            symbolTable.semExceptionHandler.show(new SemanticException(name,"Method " + name.getLexeme() + " is not defined in class " + currentClass.name.getLexeme() + " with the given parameters"));
+                        } else {
+                            for (int i = 0; i < parameters.size(); i++){
+                                if (!parameters.get(i).getType().getLexeme().equals(methodToMatch.parametersInOrder.get(i).getType().getLexeme())){
+                                    symbolTable.semExceptionHandler.show(new SemanticException(name,"Method " + name.getLexeme() + " is not defined in class " + currentClass.name.getLexeme() + " with the given parameters"));
+                                }
+                            }
+                            type = methodToMatch.type;
+                        }
+                    }
                 } else {
+                    String a = "0";
+                    a.toString();
+
                     //im the chain of something
                     if (parentChain.type.getName().equals("idClass")) {
                         if (symbolTable.classes.containsKey(parentChain.type.getLexeme())){
@@ -55,8 +73,13 @@ public class NodeVariable implements Node{
             } else {
                 //then is access to an attribute
                 if (parentChain == null){
-                    //should never happen
-                    symbolTable.semExceptionHandler.show(new SemanticException(name,"Attribute " + name.getLexeme() + " is not defined"));
+                    ConcreteClass currentClass = parentBlock.currentClass;
+                    ConcreteAttribute attributeToMatch = currentClass.attributes.get(name.getLexeme());
+                    if (attributeToMatch == null){
+                        symbolTable.semExceptionHandler.show(new SemanticException(name,"Attribute " + name.getLexeme() + " is not defined in class " + currentClass.name.getLexeme()));
+                    } else {
+                        type = attributeToMatch.getType();
+                    }
                 } else {
                     //im the chain of something
                     if (parentChain.type.getName().equals("idClass")) {
@@ -91,6 +114,15 @@ public class NodeVariable implements Node{
 
     @Override
     public void setParentBlock(NodeBlock nodeBlock) {
+        parentBlock = nodeBlock;
+    }
 
+    public void setChildChain(NodeVariable nodeVariable){
+        childChain = nodeVariable;
+        childChain.setParentChain(this);
+    }
+
+    public void setParentChain(NodeVariable nodeVariable){
+        parentChain = nodeVariable;
     }
 }

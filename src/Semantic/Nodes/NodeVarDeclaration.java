@@ -1,10 +1,7 @@
 package SecondSemantic.Semantic.Nodes;
 
 import SecondSemantic.Lexical.Token;
-import SecondSemantic.Semantic.ConcreteAttribute;
-import SecondSemantic.Semantic.ConcreteClass;
-import SecondSemantic.Semantic.ConcreteMethod;
-import SecondSemantic.Semantic.SymbolTable;
+import SecondSemantic.Semantic.*;
 
 public class NodeVarDeclaration implements Node{
 
@@ -14,20 +11,21 @@ public class NodeVarDeclaration implements Node{
     private boolean alreadyChecked = false;
     private NodeBlock parentBlock;
 
-    public NodeVarDeclaration(Token id, Node expression) {
+    public NodeVarDeclaration(Token id, Node expression, NodeBlock parentBlock) {
         this.id = id;
         this.expression = expression;
+        this.parentBlock = parentBlock;
     }
 
     @Override
-    public void check(SymbolTable symbolTable) {
+    public void check(SymbolTable symbolTable) throws SemanticException {
         if (alreadyChecked){
             return;
         }
         if (expression != null){
             expression.check(symbolTable);
             type = expression.getType();
-            parentBlock.visibleVariables.add(new ConcreteAttribute(id, type, new Token("-", "-", -1)));
+            parentBlock.localVariables.add(new ConcreteAttribute(id, type, new Token("-", "-", -1)));
         }
         alreadyChecked = true;
     }
