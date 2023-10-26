@@ -8,8 +8,8 @@ import java.io.IOException;
 import java.util.ArrayList;
 
 class MainSem {
-    public static void main(String[] args2) {
-        String [] args = {"resources/sinErrores/test.java"};
+    public static void main(String[] args) {
+        //String [] args = {"resources/sinErrores/test.java"};
         long actual = System.currentTimeMillis();
         boolean verbose = true;
         if (args.length == 0){

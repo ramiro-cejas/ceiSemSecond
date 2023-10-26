@@ -71,6 +71,16 @@ public class NodeBinaryOp implements Node{
                             symbolTable.semExceptionHandler.show(new SemanticException(operator,"Binary operation between different types"));
                         }
                     }
+                } else {
+                    //if the operator is < > <= >= only int and float are allowed (check with the lexeme of the token)
+                    //if the types are different then error
+                    if (!leftType.getLexeme().equals(rightType.getLexeme())){
+                        symbolTable.semExceptionHandler.show(new SemanticException(operator,"Binary operation between different types"));
+                    }
+                    if (!leftType.getLexeme().equals("int") && !leftType.getLexeme().equals("float")){
+                        symbolTable.semExceptionHandler.show(new SemanticException(operator,"Binary operation only allowed between int and float"));
+                    }
+                    type = new Token("keyword_boolean", "boolean", operator.getRow());
                 }
         alreadyChecked = true;
     }

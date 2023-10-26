@@ -20,9 +20,18 @@ public class NodeVariable implements Node{
         this.parentBlock = parentBlock;
     }
 
+    public NodeVariable(){
+        return;
+    }
+
     @Override
     public void check(SymbolTable symbolTable) throws SemanticException {
+        System.out.println("Checking variable " + name.getLexeme());
         if (!alreadyChecked){
+            //check parameters
+            for (Node parameter : parameters){
+                parameter.check(symbolTable);
+            }
             if (isMethod){
                 if (parentChain == null){
                     ConcreteClass currentClass = parentBlock.currentClass;
@@ -42,29 +51,31 @@ public class NodeVariable implements Node{
                         }
                     }
                 } else {
-                    String a = "0";
-                    a.toString();
 
                     //im the chain of something
-                    if (parentChain.type.getName().equals("idClass")) {
-                        if (symbolTable.classes.containsKey(parentChain.type.getLexeme())){
-                            ConcreteMethod methodToMatch = symbolTable.classes.get(parentChain.type.getLexeme()).methods.get(name.getLexeme());
+                    System.out.println("Entered with parent chain: " + parentChain);
+                    System.out.println("Entered with parent chain type: " + parentChain.getType().getName());
+                    if (parentChain.getType().getName().equals("idClass")) {
+                        System.out.println("Entered with parent chain: " + parentChain.getType().getLexeme());
+                        if (symbolTable.classes.containsKey(parentChain.getType().getLexeme())){
+                            ConcreteMethod methodToMatch = symbolTable.classes.get(parentChain.getType().getLexeme()).methods.get(name.getLexeme());
+                            System.out.println("Method to match: " + methodToMatch.name.getLexeme());
                             if (methodToMatch == null){
-                                symbolTable.semExceptionHandler.show(new SemanticException(name,"Method " + name.getLexeme() + " is not defined in class " + parentChain.type.getLexeme()));
+                                symbolTable.semExceptionHandler.show(new SemanticException(name,"Method " + name.getLexeme() + " is not defined in class " + parentChain.getType().getLexeme()));
                             } else {
                                 if (methodToMatch.parameters.size() != parameters.size()){
-                                    symbolTable.semExceptionHandler.show(new SemanticException(name,"Method " + name.getLexeme() + " is not defined in class " + parentChain.type.getLexeme() + " with the given parameters"));
+                                    symbolTable.semExceptionHandler.show(new SemanticException(name,"Method " + name.getLexeme() + " is not defined in class " + parentChain.getType().getLexeme() + " with the given parameters"));
                                 } else {
                                     for (int i = 0; i < parameters.size(); i++){
                                         if (!parameters.get(i).getType().getLexeme().equals(methodToMatch.parametersInOrder.get(i).getType().getLexeme())){
-                                            symbolTable.semExceptionHandler.show(new SemanticException(name,"Method " + name.getLexeme() + " is not defined in class " + parentChain.type.getLexeme() + " with the given parameters"));
+                                            symbolTable.semExceptionHandler.show(new SemanticException(name,"Method " + name.getLexeme() + " is not defined in class " + parentChain.getType().getLexeme() + " with the given parameters"));
                                         }
                                     }
                                     type = methodToMatch.type;
                                 }
                             }
                         } else {
-                            symbolTable.semExceptionHandler.show(new SemanticException(name,"Method " + name.getLexeme() + " is not defined in class " + parentChain.type.getLexeme()));
+                            symbolTable.semExceptionHandler.show(new SemanticException(name,"Method " + name.getLexeme() + " is not defined in class " + parentChain.getType().getLexeme()));
                         }
                     } else {
                         symbolTable.semExceptionHandler.show(new SemanticException(name,"Method " + name.getLexeme() + " is not defined"));
@@ -84,16 +95,16 @@ public class NodeVariable implements Node{
                     }
                 } else {
                     //im the chain of something
-                    if (parentChain.type.getName().equals("idClass")) {
-                        if (symbolTable.classes.containsKey(parentChain.type.getLexeme())){
-                            ConcreteAttribute attributeToMatch = symbolTable.classes.get(parentChain.type.getLexeme()).attributes.get(name.getLexeme());
+                    if (parentChain.getType().getName().equals("idClass")) {
+                        if (symbolTable.classes.containsKey(parentChain.getType().getLexeme())){
+                            ConcreteAttribute attributeToMatch = symbolTable.classes.get(parentChain.getType().getLexeme()).attributes.get(name.getLexeme());
                             if (attributeToMatch == null){
-                                symbolTable.semExceptionHandler.show(new SemanticException(name,"Attribute " + name.getLexeme() + " is not defined in class " + parentChain.type.getLexeme()));
+                                symbolTable.semExceptionHandler.show(new SemanticException(name,"Attribute " + name.getLexeme() + " is not defined in class " + parentChain.getType().getLexeme()));
                             } else {
                                 type = attributeToMatch.getType();
                             }
                         } else {
-                            symbolTable.semExceptionHandler.show(new SemanticException(name,"Attribute " + name.getLexeme() + " is not defined in class " + parentChain.type.getLexeme()));
+                            symbolTable.semExceptionHandler.show(new SemanticException(name,"Attribute " + name.getLexeme() + " is not defined in class " + parentChain.getType().getLexeme()));
                         }
                     } else {
                         symbolTable.semExceptionHandler.show(new SemanticException(name,"Attribute " + name.getLexeme() + " is not defined"));
@@ -104,6 +115,7 @@ public class NodeVariable implements Node{
             //then check the child chain
             if (childChain != null){
                 childChain.check(symbolTable);
+                type = childChain.type;
             }
             alreadyChecked = true;
         }

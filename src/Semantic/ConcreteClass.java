@@ -199,13 +199,12 @@ public class ConcreteClass{
     }
 
     public boolean isSubTypeOf(ConcreteClass concreteClass) {
+        System.out.println("isSubTypeOf: " + name.getLexeme() + " " + concreteClass.name.getLexeme());
         if (concreteClass == null)
             return false;
-        if (name.getLexeme().equals(concreteClass.name.getLexeme()))
+        if (name.getLexeme().equals(concreteClass.name.getLexeme()) || implementsName.getLexeme().equals(concreteClass.name.getLexeme()))
             return true;
         else if (extendsName.getLexeme().equals("$"))
-            return false;
-        else if (extendsName.getLexeme().equals("Object"))
             return false;
         else if (extendsName.getLexeme().equals(concreteClass.name.getLexeme()))
             return true;

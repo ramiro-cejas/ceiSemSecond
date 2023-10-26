@@ -5,21 +5,27 @@ import SecondSemantic.Semantic.ConcreteClass;
 import SecondSemantic.Semantic.SemanticException;
 import SecondSemantic.Semantic.SymbolTable;
 
-public class NodeVariableThis extends NodeExpression{
+public class NodeVariableThis extends NodeVariable{
 
     public ConcreteClass thisClass;
     public NodeBlock parentBlock;
     private Token type;
 
-    public NodeVariableThis(ConcreteClass thisClass, NodeBlock parentBlock) {
+    public NodeVariableThis(Token thisTok, ConcreteClass thisClass, NodeBlock parentBlock) {
+        super(thisTok, parentBlock);
         this.thisClass = thisClass;
-        this.parentBlock = parentBlock;
-        type = new Token("idClass", thisClass.name.getLexeme(), -1);
     }
 
     @Override
     public void check(SymbolTable symbolTable) throws SemanticException {
-        // Nothing to check
+        System.out.println("Checking this");
+        type = thisClass.name;
+        if (childChain != null){
+            System.out.println("The partial type is: "+ type.getLexeme());
+            childChain.check(symbolTable);
+            type = childChain.getType();
+        }
+        System.out.println("Type of this: " + type.getName());
     }
 
     @Override

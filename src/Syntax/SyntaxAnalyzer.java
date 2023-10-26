@@ -191,7 +191,7 @@ public class SyntaxAnalyzer {
         print("Entre en metodoOAtributo");
         if (tokenActual.getName().equals("punctuator_;") || tokenActual.getName().equals("assignment_=") || tokenActual.getName().equals("punctuator_,")){
             posiblesExtrasAtributos();
-            asignacionOpcionalDeExpresion(new EmptyNode());
+            asignacionOpcionalDeExpresion(null);
             match("punctuator_;");
             for (Token id : currentMemberId){
                 symbolTable.currentClass.addAttribute(new ConcreteAttribute(id, currentMemberType, currentMemberStatic));
@@ -516,7 +516,10 @@ public class SyntaxAnalyzer {
             Token assignment = tokenActual;
             match("assignment_=");
             Node rightSide = expresion();
-            return new NodeAssignment(assignment, leftSide, rightSide, symbolTable.currentClass.currentMethod.currentBlock);
+            if (leftSide != null)
+                return new NodeAssignment(assignment, leftSide, rightSide, symbolTable.currentClass.currentMethod.currentBlock);
+            else
+                return null;
         } else {
             return leftSide;
             //Epsilon
@@ -628,7 +631,8 @@ public class SyntaxAnalyzer {
 
     private Node literal() throws SyntaxException, LexicalException, IOException {
         print("Entre en literal");
-        Node toReturn = new NodeLiteral(tokenActual, symbolTable.currentClass.currentMethod.currentBlock);
+        Node toReturn = null;
+        Token token = tokenActual;
         if (tokenActual.getName().equals("keyword_null")){
             match("keyword_null");
         } else if (tokenActual.getName().equals("keyword_true")){
@@ -646,6 +650,10 @@ public class SyntaxAnalyzer {
         } else {
             print("Error en literal");
             throw new SyntaxException(lexicalAnalyzer.getLine(), "literal", tokenActual.getLexeme());
+        }
+        System.out.println("Current Class: "+symbolTable.currentClass.name.getLexeme());
+        if (symbolTable.currentClass.currentMethod != null){
+            toReturn = new NodeLiteral(token, symbolTable.currentClass.currentMethod.currentBlock);
         }
         return toReturn;
     }
@@ -690,8 +698,9 @@ public class SyntaxAnalyzer {
 
     private Node accesoThis() throws LexicalException, SyntaxException, IOException {
         print("Entre en accesoThis");
+        Token thisTok = tokenActual;
         match("keyword_this");
-        return new NodeVariableThis(symbolTable.currentClass, symbolTable.currentClass.currentMethod.currentBlock);
+        return new NodeVariableThis(thisTok, symbolTable.currentClass, symbolTable.currentClass.currentMethod.currentBlock);
     }
 
     private Node accesoMetVar() throws LexicalException, SyntaxException, IOException {
@@ -781,10 +790,11 @@ public class SyntaxAnalyzer {
 
     private void encadenadoOpcional(Node parentChain) throws LexicalException, SyntaxException, IOException {
         print("Entre en encadenadoOpcional");
-        NodeVariable nodeVariable = (NodeVariable) parentChain;
         if (tokenActual.getName().equals("punctuator_.")){
             NodeVariable newChain = puntoYMetVar();
+            NodeVariable nodeVariable = (NodeVariable) parentChain;
             nodeVariable.setChildChain(newChain);
+            System.out.println("Se seteo el hijo: " + newChain +" al padre: " + parentChain);
             argsOpcionales(newChain);
             encadenadoOpcional(newChain);
         } else {

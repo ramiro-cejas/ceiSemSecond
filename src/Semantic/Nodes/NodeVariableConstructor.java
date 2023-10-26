@@ -52,6 +52,11 @@ public class NodeVariableConstructor extends NodeVariable{
                     }
                 }
             }
+            if(childChain != null){
+                System.out.println("Checking child chain: "+childChain+" of the parent chain: "+this);
+                childChain.check(symbolTable);
+                type = childChain.type;
+            }
         } else {
             System.out.println("Type is not a class");
             symbolTable.semExceptionHandler.show(new SemanticException(type,"Type " + type.getLexeme() + " is not a defined class"));
