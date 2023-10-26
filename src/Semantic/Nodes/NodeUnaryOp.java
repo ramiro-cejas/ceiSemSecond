@@ -30,7 +30,7 @@ public class NodeUnaryOp extends NodeExpression {
                 }
                 type = expression.getType();
             } else if (unaryOp.getLexeme().equals("-") || unaryOp.getLexeme().equals("+")) {
-                if (!expression.getType().getName().equals("int") && !expression.getType().getName().equals("keyword_float")) {
+                if (!expression.getType().getLexeme().equals("int") && !expression.getType().getLexeme().equals("float")) {
                     symbolTable.semExceptionHandler.show(new SemanticException(unaryOp, "Unary operator - or + must be applied to int or float expressions"));
                 }
             } else {

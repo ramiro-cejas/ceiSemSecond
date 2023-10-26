@@ -35,6 +35,23 @@ public class NodeBlock implements Node{
         }
     }
 
+    public ConcreteAttribute getVisible(String toSearch){
+        //search in the collections of attributes, parameters and local variables and return the last one found
+        for (int i = localVariables.size() - 1; i >= 0; i--){
+            if (localVariables.get(i).getName().getLexeme().equals(toSearch))
+                return localVariables.get(i);
+        }
+        for (int i = methodParameters.size() - 1; i >= 0; i--){
+            if (methodParameters.get(i).getName().getLexeme().equals(toSearch))
+                return methodParameters.get(i);
+        }
+        for (int i = classAttributes.size() - 1; i >= 0; i--){
+            if (classAttributes.get(i).getName().getLexeme().equals(toSearch))
+                return classAttributes.get(i);
+        }
+        return null;
+    }
+
     @Override
     public Token getType() {
         return new Token("keyword_null", "null", -1);

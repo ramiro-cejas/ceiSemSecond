@@ -37,7 +37,7 @@ public class NodeReturn implements Node{
 
     @Override
     public Token getType() {
-        return null;
+        return type;
     }
 
     @Override

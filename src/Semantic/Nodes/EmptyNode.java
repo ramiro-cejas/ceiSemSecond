@@ -7,10 +7,13 @@ import SecondSemantic.Semantic.SymbolTable;
 
 public class EmptyNode implements Node{
 
+    public Token type = new Token("keyword_void", "void", -1);
+
     public EmptyNode() {}
 
     @Override
     public void check(SymbolTable symbolTable) {
+        System.out.println("Checking empty node");
         //do nothing
     }
 

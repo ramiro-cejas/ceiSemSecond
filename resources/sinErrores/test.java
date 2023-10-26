@@ -5,5 +5,14 @@ class A {
         var c = "hola";
         var d = 1.0;
         var e = 'a';
+        var f = new B(3);
+
+
+    }
+}
+
+class B{
+    public B(int a){
+
     }
 }

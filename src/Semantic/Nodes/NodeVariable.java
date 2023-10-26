@@ -13,7 +13,7 @@ public class NodeVariable implements Node{
     public Token type;
     public NodeVariable childChain, parentChain;
     public boolean isMethod = false;
-    public ArrayList<NodeExpression> parameters = new ArrayList<>();
+    public ArrayList<Node> parameters = new ArrayList<>();
 
     public NodeVariable(Token name, NodeBlock parentBlock) {
         this.name = name;
@@ -73,12 +73,14 @@ public class NodeVariable implements Node{
             } else {
                 //then is access to an attribute
                 if (parentChain == null){
-                    ConcreteClass currentClass = parentBlock.currentClass;
-                    ConcreteAttribute attributeToMatch = currentClass.attributes.get(name.getLexeme());
-                    if (attributeToMatch == null){
-                        symbolTable.semExceptionHandler.show(new SemanticException(name,"Attribute " + name.getLexeme() + " is not defined in class " + currentClass.name.getLexeme()));
+                    System.out.println("Entered with no parent chain");
+                    ConcreteAttribute toCheck = parentBlock.getVisible(name.getLexeme());
+                    System.out.println("To check: " + toCheck.getType().getLexeme());
+                    if (toCheck == null){
+                        symbolTable.semExceptionHandler.show(new SemanticException(name,"Attribute " + name.getLexeme() + " is not defined"));
                     } else {
-                        type = attributeToMatch.getType();
+                        System.out.println("Type setted: " + toCheck.getType().getLexeme());
+                        type = toCheck.getType();
                     }
                 } else {
                     //im the chain of something

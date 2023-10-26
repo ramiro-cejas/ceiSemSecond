@@ -43,8 +43,9 @@ public class SyntaxAnalyzer {
 
     private void inicial() throws LexicalException, SyntaxException, IOException, SemanticException {
         listaClases();
-        symbolTable.check();
         match("EOF");
+        symbolTable.check();
+        symbolTable.checkNamesAndTypes();
     }
 
     private void listaClases() throws SyntaxException, LexicalException, IOException, SemanticException {
@@ -190,7 +191,7 @@ public class SyntaxAnalyzer {
         print("Entre en metodoOAtributo");
         if (tokenActual.getName().equals("punctuator_;") || tokenActual.getName().equals("assignment_=") || tokenActual.getName().equals("punctuator_,")){
             posiblesExtrasAtributos();
-            asignacionOpcionalDeExpresion();
+            asignacionOpcionalDeExpresion(new EmptyNode());
             match("punctuator_;");
             for (Token id : currentMemberId){
                 symbolTable.currentClass.addAttribute(new ConcreteAttribute(id, currentMemberType, currentMemberStatic));
@@ -506,15 +507,18 @@ public class SyntaxAnalyzer {
         print("Entre en expresion");
         Node composedExpression = expresionCompuesta();
         Node toReturn = asignacionOpcionalDeExpresion(composedExpression);
-        return null; //TODO: return something
+        return toReturn;
     }
 
-    private void asignacionOpcionalDeExpresion() throws LexicalException, SyntaxException, IOException {
+    private Node asignacionOpcionalDeExpresion(Node leftSide) throws LexicalException, SyntaxException, IOException {
         print("Entre en asignacionOpcionalDeExpresion");
         if (tokenActual.getName().equals("assignment_=")){
+            Token assignment = tokenActual;
             match("assignment_=");
-            expresion();
+            Node rightSide = expresion();
+            return new NodeAssignment(assignment, leftSide, rightSide, symbolTable.currentClass.currentMethod.currentBlock);
         } else {
+            return leftSide;
             //Epsilon
         }
     }
@@ -684,9 +688,10 @@ public class SyntaxAnalyzer {
 
 */
 
-    private void accesoThis() throws LexicalException, SyntaxException, IOException {
+    private Node accesoThis() throws LexicalException, SyntaxException, IOException {
         print("Entre en accesoThis");
         match("keyword_this");
+        return new NodeVariableThis(symbolTable.currentClass, symbolTable.currentClass.currentMethod.currentBlock);
     }
 
     private Node accesoMetVar() throws LexicalException, SyntaxException, IOException {
@@ -753,7 +758,7 @@ public class SyntaxAnalyzer {
         print("Entre en listaExpsOpcional");
         NodeVariable nodeVariable = (NodeVariable) toReturn;
         if (tokenActual.getName().equals("operator_+") || tokenActual.getName().equals("operator_-") || tokenActual.getName().equals("operator_!") || tokenActual.getName().equals("keyword_null") || tokenActual.getName().equals("keyword_true") || tokenActual.getName().equals("keyword_false") || tokenActual.getName().equals("intLiteral") || tokenActual.getName().equals("charLiteral") || tokenActual.getName().equals("strLiteral") || tokenActual.getName().equals("floatLiteral") || tokenActual.getName().equals("keyword_this") || tokenActual.getName().equals("idMetVar") || tokenActual.getName().equals("keyword_new") || tokenActual.getName().equals("idClass") || tokenActual.getName().equals("punctuator_(")){
-            NodeExpression toAdd = (NodeExpression) expresion();
+            Node toAdd = expresion();
             nodeVariable.parameters.add(toAdd);
             listaExps(toReturn);
         } else {

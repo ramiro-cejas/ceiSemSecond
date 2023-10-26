@@ -296,7 +296,8 @@ public class SymbolTable {
 
     public void checkNamesAndTypes() throws SemanticException {
         for (ConcreteClass c : classes.values()){
-            c.checkNamesAndTypes();
+            if (!c.name.getLexeme().equals("Object") && !c.name.getLexeme().equals("System") && !c.name.getLexeme().equals("String"))
+                c.checkNamesAndTypes();
         }
     }
 

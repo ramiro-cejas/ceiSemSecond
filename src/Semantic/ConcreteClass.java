@@ -190,8 +190,33 @@ public class ConcreteClass{
     }
 
     public void checkNamesAndTypes() throws SemanticException {
+        //check constructor
+        constructor.checkNamesAndTypes();
         for (ConcreteMethod m : methods.values()){
-            m.checkNamesAndTypes();
+            if (!m.name.getLexeme().equals("debugPrint"))
+                m.checkNamesAndTypes();
+        }
+    }
+
+    public boolean isSubTypeOf(ConcreteClass concreteClass) {
+        if (concreteClass == null)
+            return false;
+        if (name.getLexeme().equals(concreteClass.name.getLexeme()))
+            return true;
+        else if (extendsName.getLexeme().equals("$"))
+            return false;
+        else if (extendsName.getLexeme().equals("Object"))
+            return false;
+        else if (extendsName.getLexeme().equals(concreteClass.name.getLexeme()))
+            return true;
+        else {
+            ConcreteClass parent = symbolTable.classes.get(extendsName.getLexeme());
+            if (parent == null)
+                parent = symbolTable.interfaces.get(extendsName.getLexeme());
+            if (parent == null)
+                return false;
+            else
+                return parent.isSubTypeOf(concreteClass);
         }
     }
 }

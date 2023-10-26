@@ -23,8 +23,10 @@ public class NodeVarDeclaration implements Node{
             return;
         }
         if (expression != null){
+            System.out.println("Checking expression of variable " + id.getLexeme() + " in class " + parentBlock.currentClass.name.getLexeme() + " in method " + parentBlock.currentMethod.name.getLexeme());
             expression.check(symbolTable);
             type = expression.getType();
+            System.out.println("Expression type: " + type.getLexeme());
             parentBlock.localVariables.add(new ConcreteAttribute(id, type, new Token("-", "-", -1)));
         }
         alreadyChecked = true;
