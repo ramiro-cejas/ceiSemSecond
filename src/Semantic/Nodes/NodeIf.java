@@ -7,13 +7,15 @@ import SecondSemantic.Semantic.SemanticException;
 import SecondSemantic.Semantic.SymbolTable;
 
 public class NodeIf implements Node{
+    public Token ifToken;
 
     public Node condition;
     public Node ifSentence;
     public Node elseSentence;
     public NodeBlock parentBlock;
 
-    public NodeIf(Node condition, Node ifSentence, Node elseSentence, NodeBlock parentBlock) {
+    public NodeIf(Token ifToken, Node condition, Node ifSentence, Node elseSentence, NodeBlock parentBlock) {
+        this.ifToken = ifToken;
         this.condition = condition;
         this.ifSentence = ifSentence;
         this.elseSentence = elseSentence;
@@ -22,10 +24,10 @@ public class NodeIf implements Node{
 
     @Override
     public void check(SymbolTable symbolTable) throws SemanticException {
+        System.out.println("Checking if sentence");
         condition.check(symbolTable);
-        System.out.println(condition);
         if (!condition.getType().getLexeme().equals("boolean")){
-            symbolTable.semExceptionHandler.show(new SemanticException(condition.getType(),"Condition must be boolean in line "+ condition.getType().getRow()));
+            symbolTable.semExceptionHandler.show(new SemanticException(ifToken,"Condition must be boolean in line "+ condition.getType().getRow()));
         }
         ifSentence.check(symbolTable);
         if (elseSentence != null){
@@ -41,5 +43,10 @@ public class NodeIf implements Node{
     @Override
     public void setParentBlock(NodeBlock nodeBlock) {
         this.parentBlock = nodeBlock;
+    }
+
+    @Override
+    public Token getToken() {
+        return ifToken;
     }
 }

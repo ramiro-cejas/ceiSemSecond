@@ -1,9 +1,9 @@
 ///[Error:this|7]
 //n2n: NumberToNumberBinaryExpression
 class Main {
-    public static void main() {}
+    static void main() {}
 
-    public void m() {
+    void m() {
         this;
     }
 }

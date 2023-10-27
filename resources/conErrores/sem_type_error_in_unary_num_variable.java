@@ -1,8 +1,8 @@
 ///[Error:-|7]
 class Main {
-    public static void main() {}
+    static void main() {}
 
-    public void m() {
+    void m() {
         var i = "q";
         var x = -i;
     }

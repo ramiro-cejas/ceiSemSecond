@@ -29,6 +29,8 @@ public class NodeVariableConstructor extends NodeVariable{
                 System.out.println("Class has constructor");
                 if (symbolTable.classes.get(type.getLexeme()).constructor.parameters.size() != parameters.size()){
                     System.out.println("Constructor has different number of parameters");
+                    System.out.println("Constructor has " + symbolTable.classes.get(type.getLexeme()).constructor.parameters.size() + " parameters");
+                    System.out.println("Variable constructor has " + parameters.size() + " parameters");
                     symbolTable.semExceptionHandler.show(new SemanticException(type,"Constructor of class " + type.getLexeme() + " has different number of parameters"));
                 } else {
                     System.out.println("Constructor has same number of parameters");

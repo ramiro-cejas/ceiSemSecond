@@ -1,10 +1,10 @@
 ///[Error:=|11]
 class Main {
-    public static void main() {}
+    static void main() {}
 
-    public void q() {}
+    void q() {}
 
-    public void m() {
+    void m() {
         var b = 3;
         var a = 1;
 

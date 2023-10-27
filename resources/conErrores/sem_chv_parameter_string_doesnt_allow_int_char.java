@@ -1,12 +1,12 @@
 ///[Error:method|6]
 class Main {
-    public static void main() {}
+    static void main() {}
 
-    public float m() {
+    float m() {
         method(1);
     }
 
-    public void method(String s) {
+    void method(String s) {
 
     }
 }

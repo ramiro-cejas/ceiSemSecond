@@ -1,8 +1,8 @@
 ///[Error:b|9]
 class Main {
-    public static void main() {}
+    static void main() {}
 
-    public void m() {
+    void m() {
         if(3 > 2) {
             var b = 3;
         }

@@ -1,14 +1,14 @@
-///[Error:I|8]
+///[Error:m|8]
 interface I {
     int m();
 }
 
 class A {
-    public void m() {
+    void m() {
         I.m();
     }
 }
 
 class Main {
-    public static void main() {}
+    static void main() {}
 }

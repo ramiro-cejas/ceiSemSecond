@@ -1,11 +1,11 @@
 ///[Error:=|9]
 class Main {
-    public static void main() {}
+    static void main() {}
 
-    private Padre rhs;
-    private Hija lhs;
+    Padre rhs;
+    Hija lhs;
 
-    public void m() {
+    void m() {
         lhs = rhs;
     }
 }

@@ -1,6 +1,7 @@
 package SecondSemantic.Semantic.Nodes;
 
 import SecondSemantic.Lexical.Token;
+import SecondSemantic.Semantic.ConcreteClass;
 import SecondSemantic.Semantic.SemanticException;
 import SecondSemantic.Semantic.SymbolTable;
 
@@ -25,15 +26,30 @@ public class NodeAssignment implements Node{
             System.out.println("Checking assignment");
             leftExpression.check(symbolTable);
             rightExpression.check(symbolTable);
+            if (!(leftExpression instanceof NodeVariable)){
+                symbolTable.semExceptionHandler.show(new SemanticException(sign, "Cannot assign to a non variable"));
+            }
+            if (rightExpression.getType().getLexeme().equals("void"))
+                symbolTable.semExceptionHandler.show(new SemanticException(sign, "Cannot assign void to a variable"));
             //if le right side conform to the left side then it's ok
-            System.out.println("Left expression: " + leftExpression);
-            System.out.println("Right expression: " + rightExpression);
+            System.out.println("Left expression: " + leftExpression + " : " + leftExpression.getType().getLexeme());
+            System.out.println("Right expression: " + rightExpression + " : " + rightExpression.getType().getLexeme());
             if (!leftExpression.getType().getName().equals(rightExpression.getType().getName())){
                 symbolTable.semExceptionHandler.show(new SemanticException(sign, "Cannot assign " + rightExpression.getType().getLexeme() + " to " + leftExpression.getType().getLexeme()));
             } else {
                 //check if the left side type is a subtype of the type on the left side
                 if (leftExpression.getType().getName().equals("idClass")){
-                    if (!symbolTable.classes.get(leftExpression.getType().getLexeme()).isSubTypeOf(symbolTable.classes.get(rightExpression.getType().getLexeme()))){
+                    // get the concrete class of the left side
+                    ConcreteClass leftClass = symbolTable.classes.get(leftExpression.getType().getLexeme());
+                    if (leftClass == null){
+                        leftClass = symbolTable.interfaces.get(leftExpression.getType().getLexeme());
+                    }
+                    // get the concrete class of the right side
+                    ConcreteClass rightClass = symbolTable.classes.get(rightExpression.getType().getLexeme());
+                    if (rightClass == null){
+                        rightClass = symbolTable.interfaces.get(rightExpression.getType().getLexeme());
+                    }
+                    if (!rightClass.isSubTypeOf(leftClass)){
                         symbolTable.semExceptionHandler.show(new SemanticException(sign, "Cannot assign " + rightExpression.getType().getLexeme() + " to " + leftExpression.getType().getLexeme()));
                     }
                 }
@@ -52,5 +68,10 @@ public class NodeAssignment implements Node{
     @Override
     public void setParentBlock(NodeBlock nodeBlock) {
         this.parentBlock = nodeBlock;
+    }
+
+    @Override
+    public Token getToken() {
+        return sign;
     }
 }

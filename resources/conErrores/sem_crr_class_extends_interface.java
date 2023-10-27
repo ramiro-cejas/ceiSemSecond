@@ -3,5 +3,5 @@ interface I {}
 class C extends I {}
 
 class Main {
-    public static void main() {}
+    static void main() {}
 }

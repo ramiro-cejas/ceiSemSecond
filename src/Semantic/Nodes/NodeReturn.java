@@ -7,13 +7,15 @@ import SecondSemantic.Semantic.SemanticException;
 import SecondSemantic.Semantic.SymbolTable;
 
 public class NodeReturn implements Node{
+    public Token returnTok;
 
     public Node expression;
     private Token type;
     private boolean alreadyChecked = false;
     private NodeBlock parentBlock;
 
-    public NodeReturn(Node expression) {
+    public NodeReturn(Token returnTok, Node expression) {
+        this.returnTok = returnTok;
         this.expression = expression;
     }
 
@@ -24,6 +26,12 @@ public class NodeReturn implements Node{
         }
         //if im in the constructor method then i dont need to check for return
         if (parentBlock.currentMethod == parentBlock.currentClass.constructor){
+            if (expression != null){
+                expression.check(symbolTable);
+                if (!expression.getType().getLexeme().equals("void")){
+                    symbolTable.semExceptionHandler.show(new SemanticException(returnTok,"Constructor method cannot have a return statement"));
+                }
+            }
             alreadyChecked = true;
             return;
         }
@@ -42,7 +50,7 @@ public class NodeReturn implements Node{
                     classOfReturn = symbolTable.interfaces.get(type.getLexeme());
                 }
                 if (classOfReturn == null) {
-                    symbolTable.semExceptionHandler.show(new SemanticException(type, "Class or interface " + type.getLexeme() + " not found"));
+                    symbolTable.semExceptionHandler.show(new SemanticException(returnTok, "Class or interface " + type.getLexeme() + " not found"));
                 }
 
                 //now get the type of return declared in the method
@@ -51,16 +59,23 @@ public class NodeReturn implements Node{
                     classOfMethod = symbolTable.interfaces.get(parentBlock.currentMethod.type.getLexeme());
                 }
                 if (classOfMethod == null) {
-                    symbolTable.semExceptionHandler.show(new SemanticException(parentBlock.currentMethod.type, "Class or interface " + parentBlock.currentMethod.type.getLexeme() + " not found"));
+                    symbolTable.semExceptionHandler.show(new SemanticException(returnTok, "Class or interface " + parentBlock.currentMethod.type.getLexeme() + " not found"));
                 }
 
                 //now we should have the concretes class, now check if the return type is a subtype of the method type
                 if (!classOfReturn.isSubTypeOf(classOfMethod)) {
-                    symbolTable.semExceptionHandler.show(new SemanticException(type, "Class " + type.getLexeme() + " is not a subtype of " + parentBlock.currentMethod.type.getLexeme() + " in line " + type.getRow()));
+                    symbolTable.semExceptionHandler.show(new SemanticException(returnTok, "Class " + type.getLexeme() + " is not a subtype of " + parentBlock.currentMethod.type.getLexeme() + " in line " + type.getRow()));
                 }
 
             } else if (!type.getLexeme().equals(parentBlock.currentMethod.type.getLexeme())) {
-                symbolTable.semExceptionHandler.show(new SemanticException(parentBlock.currentMethod.type, "No return found with type " + parentBlock.currentMethod.type.getLexeme() + " in line " + parentBlock.currentMethod.type.getRow()));
+                symbolTable.semExceptionHandler.show(new SemanticException(returnTok, "Return type is not compatible with the return type of the method"));
+            }
+        } else{
+            System.out.println("The type of the method is " + parentBlock.currentMethod.type.getLexeme());
+            System.out.println(" and the return type is " + getType().getLexeme());
+            //if the return type of the method is a primitive type then error
+            if (parentBlock.currentMethod.type.getLexeme().equals("int") || parentBlock.currentMethod.type.getLexeme().equals("float") || parentBlock.currentMethod.type.getLexeme().equals("char") || parentBlock.currentMethod.type.getLexeme().equals("boolean")) {
+                symbolTable.semExceptionHandler.show(new SemanticException(returnTok, "Return type is not compatible with the return type of the method"));
             }
         }
         alreadyChecked = true;
@@ -74,5 +89,10 @@ public class NodeReturn implements Node{
     @Override
     public void setParentBlock(NodeBlock nodeBlock) {
         this.parentBlock = nodeBlock;
+    }
+
+    @Override
+    public Token getToken() {
+        return returnTok;
     }
 }

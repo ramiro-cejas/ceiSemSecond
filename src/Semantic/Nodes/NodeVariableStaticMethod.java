@@ -8,12 +8,18 @@ import SecondSemantic.Semantic.SymbolTable;
 public class NodeVariableStaticMethod extends NodeVariable{
 
     private Token className;
+
+    boolean alreadyChecked = false;
+
     public NodeVariableStaticMethod(Token name, NodeBlock parentBlock, Token className) {
         super(name, parentBlock);
         this.className = className;
     }
 
     public void check(SymbolTable symbolTable) throws SemanticException {
+        if (alreadyChecked)
+            return;
+        System.out.println("Checking variable static method");
         //check if the class exist in the symboltable and check if that class has the static method
         if (symbolTable.classes.containsKey(className.getLexeme())){
             if (symbolTable.classes.get(className.getLexeme()).methods.containsKey(name.getLexeme())){
@@ -23,6 +29,7 @@ public class NodeVariableStaticMethod extends NodeVariable{
                     symbolTable.semExceptionHandler.show(new SemanticException(name,"Static method " + name.getLexeme() + " is not defined in class " + className.getLexeme() + " with the given parameters"));
                 } else {
                     for (int i = 0; i < parameters.size(); i++){
+                        parameters.get(i).check(symbolTable);
                         if (!parameters.get(i).getType().getLexeme().equals(methodToMatch.parametersInOrder.get(i).getType().getLexeme())){
                             symbolTable.semExceptionHandler.show(new SemanticException(name,"Static method " + name.getLexeme() + " is not defined in class " + className.getLexeme() + " with the given parameters"));
                         }
@@ -33,7 +40,7 @@ public class NodeVariableStaticMethod extends NodeVariable{
                 symbolTable.semExceptionHandler.show(new SemanticException(name,"Static method " + name.getLexeme() + " is not defined in class " + className.getLexeme()));
             }
         } else {
-            symbolTable.semExceptionHandler.show(new SemanticException(name,"Static method " + className.getLexeme() + " is not defined"));
+            symbolTable.semExceptionHandler.show(new SemanticException(name,"Static method " + name.getLexeme() + " is not defined"));
         }
     }
 }

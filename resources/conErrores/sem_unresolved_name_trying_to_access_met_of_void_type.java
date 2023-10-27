@@ -11,5 +11,5 @@ class B {
 }
 
 class Main {
-    public static void main() {}
+    static void main() {}
 }

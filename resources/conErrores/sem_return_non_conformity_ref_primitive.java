@@ -1,9 +1,9 @@
 ///[Error:return|7]
 class Main {
-    public static void main() {
+    static void main() {
     }
 
-    public A m() {
+    A m() {
         return 1;
     }
 }

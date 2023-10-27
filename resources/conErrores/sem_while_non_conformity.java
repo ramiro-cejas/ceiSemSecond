@@ -1,9 +1,9 @@
 ///[Error:while|7]
 class Main {
-    public static void main() {
+    static void main() {
     }
 
-    public boolean m() {
+    boolean m() {
         while(1) {
             return true;
         }

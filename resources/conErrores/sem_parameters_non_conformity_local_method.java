@@ -1,13 +1,13 @@
 ///[Error:method|11]
 class Main {
-    public static void main() {
+    static void main() {
     }
 
-    public void method(int x1, int x2) {
+    void method(int x1, int x2) {
 
     }
 
-    public void m() {
+    void m() {
         method(1, true);
     }
 }

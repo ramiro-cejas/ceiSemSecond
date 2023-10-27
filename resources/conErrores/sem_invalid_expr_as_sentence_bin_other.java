@@ -1,9 +1,9 @@
 ///[Error:==|7]
 //other: OtherBinaryExpression
 class Main {
-    public static void main() {}
+    static void main() {}
 
-    public void m() {
+    void m() {
         new Object() == new Object();
     }
 }

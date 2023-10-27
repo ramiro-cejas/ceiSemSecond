@@ -7,6 +7,7 @@ import java.util.ArrayList;
 
 public class NodeBlock implements Node{
 
+    public Token initialToken;
     private ArrayList<Node> sentences = new ArrayList<>();
     ArrayList<ConcreteAttribute> classAttributes = new ArrayList<>();
     ArrayList<ConcreteAttribute> methodParameters = new ArrayList<>();
@@ -16,12 +17,11 @@ public class NodeBlock implements Node{
     public ConcreteClass currentClass;
     public ConcreteMethod currentMethod;
 
-    public NodeBlock(ConcreteClass currentClass, ConcreteMethod currentMethod) {
+    public NodeBlock(Token initialToken, ConcreteClass currentClass, ConcreteMethod currentMethod, NodeBlock parentBlock) {
+        this.initialToken = initialToken;
         this.currentClass = currentClass;
         this.currentMethod = currentMethod;
-        parentBlock = null;
-        classAttributes.addAll(currentMethod.parameters.values());
-        methodParameters.addAll(currentClass.attributes.values());
+        this.parentBlock = parentBlock;
     }
 
     public void addSentence(Node sentence){
@@ -30,8 +30,30 @@ public class NodeBlock implements Node{
     }
 
     public void check(SymbolTable symbolTable) throws SemanticException {
+        if (parentBlock != null){
+            classAttributes.addAll(parentBlock.classAttributes);
+            methodParameters.addAll(parentBlock.methodParameters);
+            localVariables.addAll(parentBlock.localVariables);
+            System.out.println("_______________ SE AGREGARON CON REFERENCIA AL PADRE _______________");
+            //show all the local variables
+            System.out.println("Local variables: ");
+            for (ConcreteAttribute attribute : localVariables){
+                System.out.println(attribute.getName().getLexeme() + " : " + attribute.getType().getLexeme());
+            }
+        }else{
+            classAttributes.addAll(currentMethod.parameters.values());
+            methodParameters.addAll(currentClass.attributes.values());
+            System.out.println("_______________ SE AGREGARON SIN REFERENCIA AL PADRE _______________");
+        }
         for (Node sentence : sentences){
             sentence.check(symbolTable);
+            if (sentence instanceof NodeExpression || sentence instanceof NodeBinaryOp || sentence instanceof NodeUnaryOp || sentence instanceof NodeLiteral){
+                symbolTable.semExceptionHandler.show(new SemanticException(sentence.getToken(),"Not a valid sentence"));
+            }
+            if (sentence instanceof NodeVariable){
+                if (!((NodeVariable) sentence).inTheLastIsMethod())
+                    symbolTable.semExceptionHandler.show(new SemanticException(sentence.getToken(),"Not a valid sentence"));
+            }
         }
     }
 
@@ -60,5 +82,10 @@ public class NodeBlock implements Node{
     @Override
     public void setParentBlock(NodeBlock nodeBlock) {
         this.parentBlock = nodeBlock;
+    }
+
+    @Override
+    public Token getToken() {
+        return null;
     }
 }

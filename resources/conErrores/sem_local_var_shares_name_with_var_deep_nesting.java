@@ -1,8 +1,8 @@
 ///[Error:variable|13]
 class Main {
-    public static void main() {}
+    static void main() {}
 
-    public void m() {
+    void m() {
         var variable = 3;
 
         if(5 > 1) {

@@ -6,12 +6,14 @@ import SecondSemantic.Semantic.SymbolTable;
 
 public class NodeWhile implements Node{
 
+    public Token whileTok;
     public Node condition;
     public Node body;
     public NodeBlock parentBlock;
     private boolean alreadyChecked = false;
 
-    public NodeWhile(Node condition, Node body, NodeBlock parentBlock) {
+    public NodeWhile(Token whileTok, Node condition, Node body, NodeBlock parentBlock) {
+        this.whileTok = whileTok;
         this.condition = condition;
         this.body = body;
         this.parentBlock = parentBlock;
@@ -22,7 +24,7 @@ public class NodeWhile implements Node{
         if (!alreadyChecked){
             condition.check(symbolTable);
             if (!condition.getType().getName().equals("keyword_boolean")){
-                symbolTable.semExceptionHandler.show(new SemanticException(condition.getType(),"Condition must be boolean in line "+condition.getType().getRow()));
+                symbolTable.semExceptionHandler.show(new SemanticException(whileTok,"Condition must be boolean in line "+condition.getType().getRow()));
             }
             body.check(symbolTable);
             alreadyChecked = true;
@@ -37,5 +39,10 @@ public class NodeWhile implements Node{
     @Override
     public void setParentBlock(NodeBlock nodeBlock) {
         this.parentBlock = nodeBlock;
+    }
+
+    @Override
+    public Token getToken() {
+        return whileTok;
     }
 }

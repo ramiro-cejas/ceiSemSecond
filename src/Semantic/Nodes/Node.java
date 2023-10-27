@@ -11,4 +11,5 @@ public interface Node {
     public void check(SymbolTable symbolTable) throws SemanticException;
     public Token getType();
     void setParentBlock(NodeBlock nodeBlock);
+    public Token getToken();
 }

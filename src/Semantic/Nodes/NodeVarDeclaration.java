@@ -27,7 +27,18 @@ public class NodeVarDeclaration implements Node{
             expression.check(symbolTable);
             type = expression.getType();
             System.out.println("Expression type: " + type.getLexeme());
-            parentBlock.localVariables.add(new ConcreteAttribute(id, type, new Token("-", "-", -1)));
+            if (type.getLexeme().equals("null"))
+                symbolTable.semExceptionHandler.show(new SemanticException(id, "Cannot assign null to a variable"));
+
+            if (type.getLexeme().equals("void"))
+                symbolTable.semExceptionHandler.show(new SemanticException(id, "Cannot assign void to a variable"));
+
+            //check if already exists a variable with the same name
+            if (parentBlock.getVisible(id.getLexeme()) != null){
+                throw new SemanticException(id,"Variable " + id.getLexeme() + " already declared");
+            }
+            System.out.println("Adding variable " + id.getLexeme() + " to the local variables of the method " + parentBlock.currentMethod.name.getLexeme());
+            parentBlock.localVariables.add(new ConcreteAttribute(id, type, new Token("keyword_static", "static", -1)));
         }
         alreadyChecked = true;
     }
@@ -43,6 +54,11 @@ public class NodeVarDeclaration implements Node{
     @Override
     public void setParentBlock(NodeBlock nodeBlock) {
         this.parentBlock = nodeBlock;
+    }
+
+    @Override
+    public Token getToken() {
+        return id;
     }
 
     public String toString(){

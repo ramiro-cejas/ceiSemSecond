@@ -46,4 +46,9 @@ public class NodeLiteral implements Node{
     public void setParentBlock(NodeBlock nodeBlock) {
         this.parentBlock = nodeBlock;
     }
+
+    @Override
+    public Token getToken() {
+        return literal;
+    }
 }

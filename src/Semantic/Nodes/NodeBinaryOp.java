@@ -5,7 +5,6 @@ import SecondSemantic.Semantic.SemanticException;
 import SecondSemantic.Semantic.SymbolTable;
 
 public class NodeBinaryOp implements Node{
-
     public Node leftExpression;
     public Node rightExpression;
     public Token operator;
@@ -93,5 +92,10 @@ public class NodeBinaryOp implements Node{
     @Override
     public void setParentBlock(NodeBlock nodeBlock) {
 
+    }
+
+    @Override
+    public Token getToken() {
+        return operator;
     }
 }

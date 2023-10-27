@@ -1,10 +1,10 @@
-///[Error:this|8]
+///[Error:x|8]
 class Main {
-    public static void main() {}
+    static void main() {}
 
-    public int x;
+    int x;
 
-    public static void m() {
+    static void m() {
         var y = this.x;
     }
 }

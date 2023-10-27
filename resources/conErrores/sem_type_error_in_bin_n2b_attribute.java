@@ -1,9 +1,9 @@
 ///[Error:>|7]
 class Main {
-    private boolean b;
-    public static void main() {}
+    boolean b;
+    static void main() {}
 
-    public void m() {
+    void m() {
         var x = 1 > b;
     }
 }

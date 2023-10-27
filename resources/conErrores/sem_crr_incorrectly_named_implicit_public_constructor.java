@@ -1,8 +1,8 @@
 ///[Error:B|3]
 class A {
-    B() {}
+    public B() {}
 }
 
 class Main {
-    public static void main() {}
+    static void main() {}
 }

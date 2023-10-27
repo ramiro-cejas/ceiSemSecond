@@ -6,10 +6,13 @@ import SecondSemantic.Semantic.ConcreteMethod;
 import SecondSemantic.Semantic.SymbolTable;
 
 public class EmptyNode implements Node{
+    public Token semicolon;
 
     public Token type = new Token("keyword_void", "void", -1);
 
-    public EmptyNode() {}
+    public EmptyNode(Token semicolon) {
+        this.semicolon = semicolon;
+    }
 
     @Override
     public void check(SymbolTable symbolTable) {
@@ -26,5 +29,10 @@ public class EmptyNode implements Node{
     @Override
     public void setParentBlock(NodeBlock nodeBlock) {
         //do nothing
+    }
+
+    @Override
+    public Token getToken() {
+        return semicolon;
     }
 }

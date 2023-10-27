@@ -1,10 +1,10 @@
 ///[Error:-|8]
 class Main {
-    public static void main() {}
+    static void main() {}
 
-    public String i;
+    String i;
 
-    public void m() {
+    void m() {
         var x = -i;
     }
 }

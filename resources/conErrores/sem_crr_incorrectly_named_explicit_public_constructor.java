@@ -4,5 +4,5 @@ class A {
 }
 
 class Main {
-    public static void main() {}
+    static void main() {}
 }

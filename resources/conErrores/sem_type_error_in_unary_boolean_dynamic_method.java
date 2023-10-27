@@ -1,10 +1,10 @@
 ///[Error:!|8]
 class Main {
-    public static void main() {}
+    static void main() {}
 
-    public String i() {return "3";}
+    String i() {return "3";}
 
-    public void m() {
+    void m() {
         var x = !i();
     }
 }

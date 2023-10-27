@@ -1,12 +1,12 @@
 ///[Error:+|10]
 class Main {
-    public static void main() {}
+    static void main() {}
 
-    public Object s() {
+    Object s() {
         return new Object();
     }
 
-    public void m() {
+    void m() {
         var x = 1 + s();
     }
 }

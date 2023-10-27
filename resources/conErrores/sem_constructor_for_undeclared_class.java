@@ -1,8 +1,8 @@
 ///[Error:I|6]
 class Main {
-    public static void main() {}
+    static void main() {}
 
-    public void m() {
+    void m() {
         var x = new I();
     }
 }

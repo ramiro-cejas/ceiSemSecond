@@ -1,12 +1,12 @@
 ///[Error:if|6]
 class Main {
-    public static void main() {}
+    static void main() {}
 
-    public void m() {
+    void m() {
         if(method()) {
 
         }
     }
 
-    public void method() {}
+    void method() {}
 }

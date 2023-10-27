@@ -1,15 +1,15 @@
 ///[Error:m|14]
 class A {
-    public int a;
+    int a;
 }
 
 class B {
-    public A b;
+    A b;
 }
 
 class Main {
-    public static void main() {}
-    public void m() {
+    static void main() {}
+    void m() {
         var x = new B();
         x.b.a.m();
     }

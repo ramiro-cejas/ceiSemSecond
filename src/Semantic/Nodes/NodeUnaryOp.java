@@ -50,4 +50,9 @@ public class NodeUnaryOp extends NodeExpression {
     public void setParentBlock(NodeBlock nodeBlock) {
         this.parentBlock = nodeBlock;
     }
+
+    @Override
+    public Token getToken() {
+        return unaryOp;
+    }
 }

@@ -375,14 +375,16 @@ public class SyntaxAnalyzer {
 
     private Node bloque() throws LexicalException, SyntaxException, IOException {
         print("Entre en bloque");
+        Token initialToken = tokenActual;
         match("punctuator_{");
 
-        NodeBlock newSubBlock = new NodeBlock(symbolTable.currentClass, symbolTable.currentClass.currentMethod);
+        NodeBlock newSubBlock = new NodeBlock(initialToken, symbolTable.currentClass, symbolTable.currentClass.currentMethod, symbolTable.currentClass.currentMethod.currentBlock);
         //first time we create a block in a method we update the current block and the parent block of the new block will be null
         //this is because the block is the first block in the method
         //this will not cause any problems related of null pointer because the parent block is only used to check the visibility of the variables
         //if the parent block was null, then the variables will be the parameters and the attributes of the class
         //updated when call the check method of the block
+
         if (symbolTable.currentClass.currentMethod.methodBlock == null)
             symbolTable.currentClass.currentMethod.methodBlock = newSubBlock;
         else
@@ -412,8 +414,9 @@ public class SyntaxAnalyzer {
         Node sentence = null;
 
         if (tokenActual.getName().equals("punctuator_;")){
+            Token semicolon = tokenActual;
             match("punctuator_;");
-            sentence = new EmptyNode();
+            sentence = new EmptyNode(semicolon);
         } else if (tokenActual.getName().equals("operator_+") || tokenActual.getName().equals("operator_-") || tokenActual.getName().equals("operator_!") || tokenActual.getName().equals("keyword_null") || tokenActual.getName().equals("keyword_true") || tokenActual.getName().equals("keyword_false") || tokenActual.getName().equals("intLiteral") || tokenActual.getName().equals("charLiteral") || tokenActual.getName().equals("strLiteral") || tokenActual.getName().equals("floatLiteral") || tokenActual.getName().equals("keyword_this") || tokenActual.getName().equals("idMetVar") || tokenActual.getName().equals("keyword_new") || tokenActual.getName().equals("idClass") || tokenActual.getName().equals("punctuator_(")){
             sentence = asignacionOLlamada();
             match("punctuator_;");
@@ -455,8 +458,9 @@ public class SyntaxAnalyzer {
 
     private Node retorno() throws LexicalException, SyntaxException, IOException {
         print("Entre en retorno");
+        Token tokenReturn = tokenActual;
         match("keyword_return");
-        Node toReturn = new NodeReturn(expresionOpcional());
+        Node toReturn = new NodeReturn(tokenReturn,expresionOpcional());
         return toReturn;
     }
 
@@ -472,6 +476,7 @@ public class SyntaxAnalyzer {
 
     private Node sentenciaIf() throws LexicalException, SyntaxException, IOException {
         print("Entre en sentenciaIf");
+        Token ifToken = tokenActual;
         match("keyword_if");
         match("punctuator_(");
         Node condition = expresion();
@@ -479,7 +484,7 @@ public class SyntaxAnalyzer {
         Node bodyThen = sentencia();
         Node bodyElse = elseOpcional();
 
-        return new NodeIf(condition, bodyThen, bodyElse, symbolTable.currentClass.currentMethod.currentBlock);
+        return new NodeIf(ifToken, condition, bodyThen, bodyElse, symbolTable.currentClass.currentMethod.currentBlock);
     }
 
     private Node elseOpcional() throws LexicalException, SyntaxException, IOException {
@@ -495,12 +500,13 @@ public class SyntaxAnalyzer {
 
     private Node sentenciaWhile() throws LexicalException, SyntaxException, IOException {
         print("Entre en sentenciaWhile");
+        Token whileToken = tokenActual;
         match("keyword_while");
         match("punctuator_(");
         Node condition = expresion();
         match("punctuator_)");
         Node body = sentencia();
-        return new NodeWhile(condition, body, symbolTable.currentClass.currentMethod.currentBlock);
+        return new NodeWhile(whileToken, condition, body, symbolTable.currentClass.currentMethod.currentBlock);
     }
 
     private Node expresion() throws LexicalException, SyntaxException, IOException {
@@ -735,9 +741,11 @@ public class SyntaxAnalyzer {
 
     private Node expresionParentizada() throws LexicalException, SyntaxException, IOException {
         print("Entre en expresionParentizada");
+        Token tok_open = tokenActual;
         match("punctuator_(");
         Node toReturn = expresion();
         match("punctuator_)");
+
         return toReturn;
     }
 
@@ -780,7 +788,7 @@ public class SyntaxAnalyzer {
         NodeVariable nodeVariable = (NodeVariable) toReturn;
         if (tokenActual.getName().equals("punctuator_,")){
             match("punctuator_,");
-            NodeExpression toAdd = (NodeExpression) expresion();
+            Node toAdd = expresion();
             nodeVariable.parameters.add(toAdd);
             listaExps(toReturn);
         } else {

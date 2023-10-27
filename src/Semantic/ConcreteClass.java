@@ -60,6 +60,7 @@ public class ConcreteClass{
     }
 
     public void check() throws SemanticException {
+        //Todo: copy this in firstSemantic
 
         if (!Objects.equals(extendsName.getLexeme(), "$") && !symbolTable.classes.containsKey(extendsName.getLexeme()) && !symbolTable.interfaces.containsKey(extendsName.getLexeme()))
             symbolTable.semExceptionHandler.show(new SemanticException(extendsName,"Class extended " + extendsName.getLexeme() + " not defined in line "+ extendsName.getRow()));
@@ -67,23 +68,39 @@ public class ConcreteClass{
         else if (!Objects.equals(implementsName.getLexeme(), "-") && !symbolTable.interfaces.containsKey(implementsName.getLexeme()))
             symbolTable.semExceptionHandler.show(new SemanticException(implementsName,"Interface implemented " + implementsName.getLexeme() + " not defined in line "+ implementsName.getRow()));
 
-        else for (ConcreteMethod m : methods.values()){
-
-            if (m.type.getName().equals("idClass")) {
-                if (!symbolTable.classes.containsKey(m.type.getLexeme()) && !symbolTable.interfaces.containsKey(m.type.getLexeme())){
-                    symbolTable.semExceptionHandler.show(new SemanticException(m.type, "Class or interface " + m.type.getLexeme() + " not defined in line " + m.type.getRow()));
-                    break;
-                }
-
+        else {
+            //now we will check 2 things:
+            //1. if the concrete class is a class, then only can extend a class and implement interfaces
+            //2. if the concrete class is an interface, then only can extend interfaces
+            if (symbolTable.classes.containsKey(name.getLexeme())) {
+                if (!Objects.equals(extendsName.getLexeme(), "$") && symbolTable.interfaces.containsKey(extendsName.getLexeme()))
+                    symbolTable.semExceptionHandler.show(new SemanticException(extendsName,"Class " + name.getLexeme() + " cannot extend interface " + extendsName.getLexeme() + " in line "+ extendsName.getRow()));
+                if (!Objects.equals(implementsName.getLexeme(), "-") && symbolTable.classes.containsKey(implementsName.getLexeme()))
+                    symbolTable.semExceptionHandler.show(new SemanticException(implementsName,"Class " + name.getLexeme() + " cannot implement class " + implementsName.getLexeme() + " in line "+ implementsName.getRow()));
+            } else {
+                if (!Objects.equals(extendsName.getLexeme(), "$") && symbolTable.classes.containsKey(extendsName.getLexeme()))
+                    symbolTable.semExceptionHandler.show(new SemanticException(extendsName,"Interface " + name.getLexeme() + " cannot extend class " + extendsName.getLexeme() + " in line "+ extendsName.getRow()));
             }
 
-            m.check();
-        }
 
-        for (ConcreteAttribute a : attributes.values()){
-            if (a.type.getName().equals("idClass")) {
-                if (!symbolTable.classes.containsKey(a.type.getLexeme()) && !symbolTable.interfaces.containsKey(a.type.getLexeme()))
-                    symbolTable.semExceptionHandler.show(new SemanticException(a.type,"Class or interface " + a.type.getLexeme() + " not defined in line "+ a.type.getRow()));
+            for (ConcreteMethod m : methods.values()){
+
+                if (m.type.getName().equals("idClass")) {
+                    if (!symbolTable.classes.containsKey(m.type.getLexeme()) && !symbolTable.interfaces.containsKey(m.type.getLexeme())){
+                        symbolTable.semExceptionHandler.show(new SemanticException(m.type, "Class or interface " + m.type.getLexeme() + " not defined in line " + m.type.getRow()));
+                        break;
+                    }
+
+                }
+
+                m.check();
+            }
+
+            for (ConcreteAttribute a : attributes.values()){
+                if (a.type.getName().equals("idClass")) {
+                    if (!symbolTable.classes.containsKey(a.type.getLexeme()) && !symbolTable.interfaces.containsKey(a.type.getLexeme()))
+                        symbolTable.semExceptionHandler.show(new SemanticException(a.type,"Class or interface " + a.type.getLexeme() + " not defined in line "+ a.type.getRow()));
+                }
             }
         }
     }

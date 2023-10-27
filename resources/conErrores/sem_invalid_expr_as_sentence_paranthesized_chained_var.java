@@ -1,13 +1,13 @@
-///[Error:(|7]
+///[Error:new|7]
 //n2n: NumberToNumberBinaryExpression
 class Main {
-    public static void main() {}
+    static void main() {}
 
-    public void m() {
+    void m() {
         (new A()).x;
     }
 }
 
 class A {
-    public int x;
+    int x;
 }

@@ -1,8 +1,8 @@
 ///[Error:=|9]
 class Main {
-    public static void main() {}
+    static void main() {}
 
-    public void m() {
+    void m() {
         var b = 'c';
         var i = 1;
 

@@ -4,7 +4,7 @@ import SecondSemantic.Lexical.Token;
 
 public class ConcreteAttribute {
 
-    Token isStatic;
+    public Token isStatic;
     Token name;
     Token type;
 

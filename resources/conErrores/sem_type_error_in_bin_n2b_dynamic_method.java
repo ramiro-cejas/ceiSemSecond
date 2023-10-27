@@ -1,12 +1,12 @@
 ///[Error:>|10]
 class Main {
-    public static void main() {}
+    static void main() {}
 
-    public String s() {
+    String s() {
         return "3";
     }
 
-    public void m() {
+    void m() {
         var x = 1 > s();
     }
 }

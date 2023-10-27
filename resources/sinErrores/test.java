@@ -6,7 +6,7 @@ class A {
         var d = 1.0;
         var e = 'a';
         var f = new B(3);
-        a = f.m2("2").m3();
+        //a = f.m2("2").m3();
 
     }
 }

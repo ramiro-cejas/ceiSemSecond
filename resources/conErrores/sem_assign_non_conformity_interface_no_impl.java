@@ -1,10 +1,10 @@
 ///[Error:=|9]
 class Main {
-    public static void main() {}
+    static void main() {}
 
-    private Interfaz lhs;
+    Interfaz lhs;
 
-    public void m() {
+    void m() {
         var rhs = new Clase();
         lhs = rhs;
     }

@@ -1,12 +1,12 @@
 ///[Error:x|10]
 class Main {
-    public static void main() {}
+    static void main() {}
 
-    public int x() {
+    int x() {
         return 3;
     }
 
-    public static void m() {
+    static void m() {
         var y = x();
     }
 }

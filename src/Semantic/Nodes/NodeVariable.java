@@ -36,6 +36,10 @@ public class NodeVariable implements Node{
                 if (parentChain == null){
                     ConcreteClass currentClass = parentBlock.currentClass;
                     ConcreteMethod methodToMatch = currentClass.methods.get(name.getLexeme());
+                    if (parentBlock.currentMethod.isStatic.getLexeme().equals("static") && !methodToMatch.isStatic.getLexeme().equals("static")){
+                        if (!(parentChain instanceof NodeVariableConstructor))
+                            symbolTable.semExceptionHandler.show(new SemanticException(name,"Static method " + name.getLexeme() + " cannot be called from a non static method"));
+                    }
                     if (methodToMatch == null){
                         symbolTable.semExceptionHandler.show(new SemanticException(name,"Method " + name.getLexeme() + " is not defined in class " + currentClass.name.getLexeme()));
                     } else {
@@ -53,13 +57,13 @@ public class NodeVariable implements Node{
                 } else {
 
                     //im the chain of something
-                    System.out.println("Entered with parent chain: " + parentChain);
-                    System.out.println("Entered with parent chain type: " + parentChain.getType().getName());
                     if (parentChain.getType().getName().equals("idClass")) {
-                        System.out.println("Entered with parent chain: " + parentChain.getType().getLexeme());
                         if (symbolTable.classes.containsKey(parentChain.getType().getLexeme())){
                             ConcreteMethod methodToMatch = symbolTable.classes.get(parentChain.getType().getLexeme()).methods.get(name.getLexeme());
-                            System.out.println("Method to match: " + methodToMatch.name.getLexeme());
+                            if (parentBlock.currentMethod.isStatic.getLexeme().equals("static") && !methodToMatch.isStatic.getLexeme().equals("static")){
+                                if (!(parentChain instanceof NodeVariableConstructor))
+                                    symbolTable.semExceptionHandler.show(new SemanticException(name,"Static method " + name.getLexeme() + " cannot be called from a non static method"));
+                            }
                             if (methodToMatch == null){
                                 symbolTable.semExceptionHandler.show(new SemanticException(name,"Method " + name.getLexeme() + " is not defined in class " + parentChain.getType().getLexeme()));
                             } else {
@@ -80,17 +84,23 @@ public class NodeVariable implements Node{
                     } else {
                         symbolTable.semExceptionHandler.show(new SemanticException(name,"Method " + name.getLexeme() + " is not defined"));
                     }
+
+
                 }
             } else {
                 //then is access to an attribute
                 if (parentChain == null){
                     System.out.println("Entered with no parent chain");
                     ConcreteAttribute toCheck = parentBlock.getVisible(name.getLexeme());
-                    System.out.println("To check: " + toCheck.getType().getLexeme());
                     if (toCheck == null){
                         symbolTable.semExceptionHandler.show(new SemanticException(name,"Attribute " + name.getLexeme() + " is not defined"));
                     } else {
-                        System.out.println("Type setted: " + toCheck.getType().getLexeme());
+                        if (parentBlock.currentMethod.isStatic.getLexeme().equals("static") && !toCheck.isStatic.getLexeme().equals("static") && parentBlock.getVisible(name.getLexeme()) == null){
+                            symbolTable.semExceptionHandler.show(new SemanticException(name,"Non static attribute " + name.getLexeme() + " cannot be called from a static method"));
+                        }
+                        if (parentBlock.currentMethod.isStatic.getLexeme().equals("static") && parentBlock.getVisible(name.getLexeme()).isStatic.getLexeme().equals("-") && !parentBlock.currentMethod.parameters.containsKey(name.getLexeme()))
+                            symbolTable.semExceptionHandler.show(new SemanticException(name,"ASDASDAS Non static attribute " + name.getLexeme() + " cannot be called from a static method"));
+
                         type = toCheck.getType();
                     }
                 } else {
@@ -101,6 +111,10 @@ public class NodeVariable implements Node{
                             if (attributeToMatch == null){
                                 symbolTable.semExceptionHandler.show(new SemanticException(name,"Attribute " + name.getLexeme() + " is not defined in class " + parentChain.getType().getLexeme()));
                             } else {
+                                if (parentBlock.currentMethod.isStatic.getLexeme().equals("static") && !attributeToMatch.isStatic.getLexeme().equals("static")){
+                                    if (!(parentChain instanceof NodeVariableConstructor))
+                                        symbolTable.semExceptionHandler.show(new SemanticException(name,"Non static attribute " + name.getLexeme() + " cannot be called from a static method"));
+                                }
                                 type = attributeToMatch.getType();
                             }
                         } else {
@@ -131,6 +145,11 @@ public class NodeVariable implements Node{
         parentBlock = nodeBlock;
     }
 
+    @Override
+    public Token getToken() {
+        return name;
+    }
+
     public void setChildChain(NodeVariable nodeVariable){
         childChain = nodeVariable;
         childChain.setParentChain(this);
@@ -138,5 +157,12 @@ public class NodeVariable implements Node{
 
     public void setParentChain(NodeVariable nodeVariable){
         parentChain = nodeVariable;
+    }
+
+    public boolean inTheLastIsMethod(){
+        if (childChain == null)
+            return isMethod;
+        else
+            return childChain.inTheLastIsMethod();
     }
 }
