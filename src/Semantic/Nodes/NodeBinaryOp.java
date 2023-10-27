@@ -4,7 +4,7 @@ import SecondSemantic.Lexical.Token;
 import SecondSemantic.Semantic.SemanticException;
 import SecondSemantic.Semantic.SymbolTable;
 
-public class NodeBinaryOp implements Node{
+public class NodeBinaryOp extends NodeExpression{
     public Node leftExpression;
     public Node rightExpression;
     public Token operator;
