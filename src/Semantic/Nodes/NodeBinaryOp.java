@@ -23,14 +23,10 @@ public class NodeBinaryOp implements Node{
         if (alreadyChecked){
             return;
         }
-        System.out.println("Checking binary operation with operator: " + operator.getLexeme() + " and left expression: " + leftExpression + " and right expression: " + rightExpression);
         leftExpression.check(symbolTable);
         rightExpression.check(symbolTable);
         Token leftType = leftExpression.getType();
         Token rightType = rightExpression.getType();
-        System.out.println("Left type: " + leftType.getLexeme());
-        System.out.println("Right type: " + rightType.getLexeme());
-        System.out.println("Operator: " + operator.getLexeme());
         //if the operator is + - * / % only int and float are allowed (check with the lexeme of the token)
         if (operator.getLexeme().equals("+") || operator.getLexeme().equals("-") || operator.getLexeme().equals("*") || operator.getLexeme().equals("/") || operator.getLexeme().equals("%")){
             // if the types are different then error
@@ -41,7 +37,6 @@ public class NodeBinaryOp implements Node{
                 symbolTable.semExceptionHandler.show(new SemanticException(operator,"Binary operation only allowed between int and float"));
             }
             type = leftType;
-            System.out.println("Type: " + type.getLexeme() + " setted on the object " + this);
         } else
             //if the operator is && || only boolean is allowed (check with the lexeme of the token)
             if (operator.getLexeme().equals("&&") || operator.getLexeme().equals("||")){

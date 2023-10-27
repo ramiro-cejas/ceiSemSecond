@@ -16,7 +16,6 @@ public class EmptyNode implements Node{
 
     @Override
     public void check(SymbolTable symbolTable) {
-        System.out.println("Checking empty node");
         //do nothing
     }
 

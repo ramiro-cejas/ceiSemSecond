@@ -26,7 +26,6 @@ public class NodeVariable implements Node{
 
     @Override
     public void check(SymbolTable symbolTable) throws SemanticException {
-        System.out.println("Checking variable " + name.getLexeme());
         if (!alreadyChecked){
             //check parameters
             for (Node parameter : parameters){
@@ -90,7 +89,6 @@ public class NodeVariable implements Node{
             } else {
                 //then is access to an attribute
                 if (parentChain == null){
-                    System.out.println("Entered with no parent chain");
                     ConcreteAttribute toCheck = parentBlock.getVisible(name.getLexeme());
                     if (toCheck == null){
                         symbolTable.semExceptionHandler.show(new SemanticException(name,"Attribute " + name.getLexeme() + " is not defined"));

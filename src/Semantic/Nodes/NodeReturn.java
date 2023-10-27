@@ -71,8 +71,6 @@ public class NodeReturn implements Node{
                 symbolTable.semExceptionHandler.show(new SemanticException(returnTok, "Return type is not compatible with the return type of the method"));
             }
         } else{
-            System.out.println("The type of the method is " + parentBlock.currentMethod.type.getLexeme());
-            System.out.println(" and the return type is " + getType().getLexeme());
             //if the return type of the method is a primitive type then error
             if (parentBlock.currentMethod.type.getLexeme().equals("int") || parentBlock.currentMethod.type.getLexeme().equals("float") || parentBlock.currentMethod.type.getLexeme().equals("char") || parentBlock.currentMethod.type.getLexeme().equals("boolean")) {
                 symbolTable.semExceptionHandler.show(new SemanticException(returnTok, "Return type is not compatible with the return type of the method"));

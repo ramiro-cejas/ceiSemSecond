@@ -20,7 +20,6 @@ public class NodeLiteral implements Node{
     public void check(SymbolTable symbolTable) throws SemanticException {
         if (alreadyChecked)
             return;
-        System.out.println("Checking literal");
         if (literal.getName().equals("keyword_null"))
             type = new Token("keyword_null", "null", literal.getRow());
         else if (literal.getName().equals("keyword_true") || literal.getName().equals("keyword_false"))
@@ -33,7 +32,6 @@ public class NodeLiteral implements Node{
             type = new Token("idClass", "String", literal.getRow());
         else
             type = new Token("keyword_char", "char", literal.getRow());
-        System.out.println("Literal type: " + type.getLexeme());
         alreadyChecked = true;
     }
 

@@ -18,14 +18,11 @@ public class NodeVariableThis extends NodeVariable{
 
     @Override
     public void check(SymbolTable symbolTable) throws SemanticException {
-        System.out.println("Checking this");
         type = thisClass.name;
         if (childChain != null){
-            System.out.println("The partial type is: "+ type.getLexeme());
             childChain.check(symbolTable);
             type = childChain.getType();
         }
-        System.out.println("Type of this: " + type.getName());
     }
 
     @Override

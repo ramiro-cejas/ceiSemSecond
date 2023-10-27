@@ -216,7 +216,6 @@ public class ConcreteClass{
     }
 
     public boolean isSubTypeOf(ConcreteClass concreteClass) {
-        System.out.println("isSubTypeOf: " + name.getLexeme() + " " + concreteClass.name.getLexeme());
         if (concreteClass == null)
             return false;
         if (name.getLexeme().equals(concreteClass.name.getLexeme()) || implementsName.getLexeme().equals(concreteClass.name.getLexeme()))

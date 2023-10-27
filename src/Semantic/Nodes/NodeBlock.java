@@ -34,16 +34,9 @@ public class NodeBlock implements Node{
             classAttributes.addAll(parentBlock.classAttributes);
             methodParameters.addAll(parentBlock.methodParameters);
             localVariables.addAll(parentBlock.localVariables);
-            System.out.println("_______________ SE AGREGARON CON REFERENCIA AL PADRE _______________");
-            //show all the local variables
-            System.out.println("Local variables: ");
-            for (ConcreteAttribute attribute : localVariables){
-                System.out.println(attribute.getName().getLexeme() + " : " + attribute.getType().getLexeme());
-            }
         }else{
             classAttributes.addAll(currentMethod.parameters.values());
             methodParameters.addAll(currentClass.attributes.values());
-            System.out.println("_______________ SE AGREGARON SIN REFERENCIA AL PADRE _______________");
         }
         for (Node sentence : sentences){
             sentence.check(symbolTable);

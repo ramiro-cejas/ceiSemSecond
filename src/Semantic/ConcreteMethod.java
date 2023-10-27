@@ -55,7 +55,6 @@ public class ConcreteMethod {
     }
 
     public void checkNamesAndTypes() throws SemanticException {
-        System.out.println("Checking method " + name.getLexeme() + " in class " + symbolTable.currentClass.name.getLexeme());
         if (methodBlock != null){
             methodBlock.check(symbolTable);
         }

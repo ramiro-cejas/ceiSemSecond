@@ -24,7 +24,6 @@ public class NodeIf implements Node{
 
     @Override
     public void check(SymbolTable symbolTable) throws SemanticException {
-        System.out.println("Checking if sentence");
         condition.check(symbolTable);
         if (!condition.getType().getLexeme().equals("boolean")){
             symbolTable.semExceptionHandler.show(new SemanticException(ifToken,"Condition must be boolean in line "+ condition.getType().getRow()));

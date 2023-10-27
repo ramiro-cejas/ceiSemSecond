@@ -19,7 +19,6 @@ public class NodeVariableStaticMethod extends NodeVariable{
     public void check(SymbolTable symbolTable) throws SemanticException {
         if (alreadyChecked)
             return;
-        System.out.println("Checking variable static method");
         //check if the class exist in the symboltable and check if that class has the static method
         if (symbolTable.classes.containsKey(className.getLexeme())){
             if (symbolTable.classes.get(className.getLexeme()).methods.containsKey(name.getLexeme())){

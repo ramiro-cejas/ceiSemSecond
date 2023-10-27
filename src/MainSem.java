@@ -11,7 +11,7 @@ class MainSem {
     public static void main(String[] args) {
         //String [] args = {"resources/sinErrores/test.java"};
         long actual = System.currentTimeMillis();
-        boolean verbose = true;
+        boolean verbose = false;
         if (args.length == 0){
             System.out.println("ERROR: Ningun archivo fuente pasado como parámetro. Por favor proporcione la ruta del archivo como parámetro.");
         }
@@ -37,7 +37,6 @@ class MainSem {
                     errorsCollection.addAll(syntaxAnalyzer.getErrors());
                 }catch (Exception e){
                     errorsCollection.add(e);
-                    e.printStackTrace();
                 }
             } catch (IOException e) {
                 System.out.println("Error al abrir o leer el archivo.");

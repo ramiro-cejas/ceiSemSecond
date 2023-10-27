@@ -23,7 +23,6 @@ public class NodeAssignment implements Node{
     @Override
     public void check(SymbolTable symbolTable) throws SemanticException {
         if (!alreadyChecked){
-            System.out.println("Checking assignment");
             leftExpression.check(symbolTable);
             rightExpression.check(symbolTable);
             if (!(leftExpression instanceof NodeVariable)){
@@ -32,8 +31,6 @@ public class NodeAssignment implements Node{
             if (rightExpression.getType().getLexeme().equals("void"))
                 symbolTable.semExceptionHandler.show(new SemanticException(sign, "Cannot assign void to a variable"));
             //if le right side conform to the left side then it's ok
-            System.out.println("Left expression: " + leftExpression + " : " + leftExpression.getType().getLexeme());
-            System.out.println("Right expression: " + rightExpression + " : " + rightExpression.getType().getLexeme());
             if (!leftExpression.getType().getName().equals(rightExpression.getType().getName())){
                 symbolTable.semExceptionHandler.show(new SemanticException(sign, "Cannot assign " + rightExpression.getType().getLexeme() + " to " + leftExpression.getType().getLexeme()));
             } else {

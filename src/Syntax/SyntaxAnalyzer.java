@@ -633,8 +633,6 @@ public class SyntaxAnalyzer {
         }
     }
 
-    //TODO: IMPORTANT - All the nodes must be created with the current block of the method
-
     private Node literal() throws SyntaxException, LexicalException, IOException {
         print("Entre en literal");
         Node toReturn = null;
@@ -657,7 +655,6 @@ public class SyntaxAnalyzer {
             print("Error en literal");
             throw new SyntaxException(lexicalAnalyzer.getLine(), "literal", tokenActual.getLexeme());
         }
-        System.out.println("Current Class: "+symbolTable.currentClass.name.getLexeme());
         if (symbolTable.currentClass.currentMethod != null){
             toReturn = new NodeLiteral(token, symbolTable.currentClass.currentMethod.currentBlock);
         }
@@ -802,7 +799,6 @@ public class SyntaxAnalyzer {
             NodeVariable newChain = puntoYMetVar();
             NodeVariable nodeVariable = (NodeVariable) parentChain;
             nodeVariable.setChildChain(newChain);
-            System.out.println("Se seteo el hijo: " + newChain +" al padre: " + parentChain);
             argsOpcionales(newChain);
             encadenadoOpcional(newChain);
         } else {

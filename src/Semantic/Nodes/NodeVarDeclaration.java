@@ -23,10 +23,8 @@ public class NodeVarDeclaration implements Node{
             return;
         }
         if (expression != null){
-            System.out.println("Checking expression of variable " + id.getLexeme() + " in class " + parentBlock.currentClass.name.getLexeme() + " in method " + parentBlock.currentMethod.name.getLexeme());
             expression.check(symbolTable);
             type = expression.getType();
-            System.out.println("Expression type: " + type.getLexeme());
             if (type.getLexeme().equals("null"))
                 symbolTable.semExceptionHandler.show(new SemanticException(id, "Cannot assign null to a variable"));
 
@@ -37,7 +35,6 @@ public class NodeVarDeclaration implements Node{
             if (parentBlock.getVisible(id.getLexeme()) != null){
                 throw new SemanticException(id,"Variable " + id.getLexeme() + " already declared");
             }
-            System.out.println("Adding variable " + id.getLexeme() + " to the local variables of the method " + parentBlock.currentMethod.name.getLexeme());
             parentBlock.localVariables.add(new ConcreteAttribute(id, type, new Token("keyword_static", "static", -1)));
         }
         alreadyChecked = true;
