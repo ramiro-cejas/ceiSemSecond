@@ -60,13 +60,9 @@ public class ConcreteClass{
     }
 
     public void check() throws SemanticException {
-        //Todo: copy this in firstSemantic
 
         if (!Objects.equals(extendsName.getLexeme(), "$") && !symbolTable.classes.containsKey(extendsName.getLexeme()) && !symbolTable.interfaces.containsKey(extendsName.getLexeme()))
             symbolTable.semExceptionHandler.show(new SemanticException(extendsName,"Class extended " + extendsName.getLexeme() + " not defined in line "+ extendsName.getRow()));
-
-        else if (!Objects.equals(implementsName.getLexeme(), "-") && !symbolTable.interfaces.containsKey(implementsName.getLexeme()))
-            symbolTable.semExceptionHandler.show(new SemanticException(implementsName,"Interface implemented " + implementsName.getLexeme() + " not defined in line "+ implementsName.getRow()));
 
         else {
             //now we will check 2 things:

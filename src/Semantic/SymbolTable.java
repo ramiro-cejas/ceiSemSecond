@@ -139,8 +139,6 @@ public class SymbolTable {
             if (!c.implementsName.getLexeme().equals("-")){
                 semExceptionHandler.show(new SemanticException(c.implementsName, "Interface " + c.name.getLexeme() + " cannot implement " + c.implementsName.getLexeme()));
             }
-            if (c.methods.containsKey("debugPrint"))
-                semExceptionHandler.show(new SemanticException(c.methods.get("debugPrint").name, "Interface " + c.name.getLexeme() + " cannot have debugPrint method"));
             for (ConcreteMethod m : c.methods.values()){
                 if (m.isStatic.getLexeme().equals("static"))
                     semExceptionHandler.show(new SemanticException(m.name, "Interface " + c.name.getLexeme() + " cannot have static methods"));
